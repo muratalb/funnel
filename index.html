@@ -786,7 +786,7 @@
 
       const panelsSold = acceptedOffers.reduce((sum, offer) => sum + Number(offer.panelAdedi || 0), 0);
       const manualSales = Number(state.manualMonthlySales || 0);
-      const totalSales = Math.max(panelsSold, manualSales);
+      const totalSales = panelsSold + manualSales;
       document.getElementById('kpi-panels').textContent = `Toplam: ${totalSales.toLocaleString('tr-TR')}`;
       document.getElementById('kpi-panels-breakdown').textContent = `Tekliflerden: ${panelsSold.toLocaleString('tr-TR')} • Manuel: ${manualSales.toLocaleString('tr-TR')}`;
 
@@ -1005,7 +1005,11 @@
 
     function renderOpportunities() {
       const search = document.getElementById('opp-search').value.trim();
-      let opportunities = filterSearch(state.opportunities, search, ['projeAdi', 'il']);
+      const opportunitiesWithEpc = state.opportunities.map(opp => {
+        const epc = findById(state.epcAccounts, opp.epcId);
+        return { ...opp, epcFirmaAdi: epc ? epc.firmaAdi : '' };
+      });
+      let opportunities = filterSearch(opportunitiesWithEpc, search, ['projeAdi', 'il', 'epcFirmaAdi']);
       const list = document.getElementById('opp-list');
       list.innerHTML = '';
       if (!opportunities.length) {
@@ -1175,7 +1179,7 @@
     }
 
     function openEpcForm(data = null) {
-      const isEdit = Boolean(data);
+      const isEdit = Boolean(data && data.id);
       const form = document.createElement('form');
       form.innerHTML = `
         <div class="form-group">
@@ -1269,9 +1273,14 @@
         } else {
           state.epcAccounts.push(entry);
         }
+        let conversionToast = false;
+        if (data?.sourceLeadId) {
+          state.leads = state.leads.map(lead => lead.id === data.sourceLeadId ? { ...lead, asama: 'iletisim_kuruldu' } : lead);
+          conversionToast = true;
+        }
         saveState();
         renderAll();
-        showToast('EPC kaydedildi.');
+        showToast(conversionToast ? 'Lead EPC’ye dönüştürüldü.' : 'EPC kaydedildi.');
         closePanel();
       });
 
@@ -1909,9 +1918,29 @@
           <div><strong>Kaynak:</strong> ${lead.kaynak}</div>
           <div><strong>Aşama:</strong> ${lead.asama}</div>
           <div><strong>Notlar:</strong> ${lead.notlar || '-'}</div>
+          <div class="list-actions" style="margin-top:12px;">
+            <button class="btn" data-action="lead-convert" data-id="${lead.id}">Lead → EPC’ye Çevir</button>
+          </div>
         </div>
       `;
+      content.querySelector('[data-action="lead-convert"]').addEventListener('click', () => convertLeadToEpc(lead));
       openPanel('Lead Detay', lead.adSoyadOrFirma, content);
+    }
+
+    function convertLeadToEpc(lead) {
+      const stage = funnelStages[0];
+      const tags = ['lead'];
+      if (lead.kaynak) tags.push(lead.kaynak);
+      openEpcForm({
+        firmaAdi: lead.adSoyadOrFirma || '',
+        sehir: lead.il || '',
+        durum: 'hedef',
+        funnelStage: stage.label,
+        olasilik: stage.probability,
+        etiketler: tags,
+        notlar: lead.notlar ? `Lead notu: ${lead.notlar}` : '',
+        sourceLeadId: lead.id
+      });
     }
 
     function startOfDay(date) {
