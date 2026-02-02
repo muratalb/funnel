@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alb Enerji • EPC CRM</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --muted: #6e6e73;
+      --text: #1d1d1f;
+      --border: #e0e0e5;
+      --accent: #0a84ff;
+      --accent-2: #30b0c7;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(245, 245, 247, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
+    }
+
+    .nav {
+      display: flex;
+      gap: 12px;
+      padding: 16px 24px;
+      overflow-x: auto;
+    }
+
+    .nav button {
+      border: 0;
+      background: transparent;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav button.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 24px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin: 0 0 16px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid transparent;
+    }
+
+    .card + .card {
+      margin-top: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: #f0f0f5;
+      font-size: 12px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 8px 14px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 1px dashed var(--border);
+    }
+
+    .btn:hover, .btn:focus-visible {
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+      outline: none;
+    }
+
+    .input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+      transition: border 0.2s ease;
+    }
+
+    .input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.15);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .toolbar .search {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .list-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: #f2f2f7;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .table th, .table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .table th {
+      background: #f7f7fb;
+      font-weight: 600;
+    }
+
+    .side-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(420px, 100%);
+      height: 100%;
+      background: white;
+      box-shadow: -20px 0 40px rgba(0, 0, 0, 0.1);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-panel.open {
+      transform: translateX(0);
+    }
+
+    .side-panel header {
+      position: sticky;
+      top: 0;
+      background: white;
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .side-panel .content {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1d1d1f;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 40;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .banner {
+      background: #fff0d6;
+      border: 1px solid #f1d29b;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 840px) {
+      .nav {
+        padding: 12px 16px;
+      }
+
+      .container {
+        padding: 16px;
+      }
+
+      header {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <nav class="nav" aria-label="Ana navigasyon">
+        <button data-page="dashboard" class="active">Gösterge Paneli</button>
+        <button data-page="funnel">Funnel & Pipeline</button>
+        <button data-page="epc">EPC (Firmalar)</button>
+        <button data-page="opportunities">Fırsatlar</button>
+        <button data-page="offers">Teklifler</button>
+        <button data-page="partners">Partner Programı</button>
+        <button data-page="settings">Ayarlar</button>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section id="dashboard" class="page active">
+        <div class="toolbar">
+          <div>
+            <h1 class="section-title">Gösterge Paneli</h1>
+            <div class="muted">Alb Enerji EPC satış hunisi genel görünümü.</div>
+          </div>
+          <button class="btn primary" data-action="new-lead">Yeni Lead</button>
+        </div>
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="muted">Bu Ay Satılan Panel</div>
+            <h2 id="kpi-panels">0</h2>
+          </div>
+          <div class="card">
+            <div class="muted">Bu Ay Yeni EPC</div>
+            <h2 id="kpi-epc">0</h2>
+          </div>
+          <div class="card">
+            <div class="muted">Teklifler (Gönderildi/Kabul/Kayıp)</div>
+            <h2 id="kpi-offers">0 / 0 / 0</h2>
+          </div>
+          <div class="card">
+            <div class="muted">Partner Programı Aylık İlerleme</div>
+            <h2 id="kpi-partners">0%</h2>
+          </div>
+          <div class="card">
+            <div class="muted">Ağırlıklı Pipeline (Top 5 EPC)</div>
+            <div id="kpi-top-epc" class="list"></div>
+          </div>
+          <div class="card">
+            <div class="muted">Yaklaşan Aksiyonlar (7 gün)</div>
+            <div id="kpi-actions" class="list"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="section-title">Leadler</h2>
+              <div class="muted">Yeni EPC adaylarını ve son kullanıcıları yönetin.</div>
+            </div>
+            <button class="btn" data-action="new-lead">Yeni Lead</button>
+          </div>
+          <div id="lead-list" class="list"></div>
+        </div>
+      </section>
+
+      <section id="funnel" class="page">
+        <div class="toolbar">
+          <div>
+            <h1 class="section-title">Funnel & Pipeline</h1>
+            <div class="muted">EPC kazanım hunisi ve ağırlıklı pipeline.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="input search" id="funnel-search" placeholder="Firma, şehir veya etiket ara" aria-label="Funnel arama">
+            <button class="btn primary" data-action="new-epc">Yeni EPC</button>
+          </div>
+        </div>
+        <div class="grid grid-3" id="funnel-cards"></div>
+        <div class="grid grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="muted">Toplam Ağırlıklı Pipeline Panel</div>
+            <h2 id="pipeline-total">0</h2>
+          </div>
+          <div class="card">
+            <div class="muted">Aylık Hedef (Panel)</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input class="input" id="monthly-target" type="number" min="0" placeholder="Örn: 800">
+              <span class="pill" id="pipeline-ratio">0x</span>
+            </div>
+            <div class="muted" style="margin-top:8px;">Hedef oranı 3x ve üzeri olmalı.</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header">
+            <div>
+              <h2 class="section-title">EPC Pipeline</h2>
+              <div class="muted">Ağırlıklı panel hesabı otomatik güncellenir.</div>
+            </div>
+          </div>
+          <div class="grid grid-2" style="margin-bottom:16px;">
+            <select id="filter-city" aria-label="Şehir filtre">
+              <option value="">Şehir (Tümü)</option>
+            </select>
+            <select id="filter-status" aria-label="Durum filtre">
+              <option value="">Durum (Tümü)</option>
+              <option value="hedef">Hedef</option>
+              <option value="aktif">Aktif</option>
+              <option value="pasif">Pasif</option>
+            </select>
+            <select id="filter-segment" aria-label="Segment filtre">
+              <option value="">Segment (Tümü)</option>
+              <option value="rooftop">Rooftop</option>
+              <option value="agri">Agri</option>
+              <option value="industrial">Industrial</option>
+              <option value="mixed">Mixed</option>
+            </select>
+            <select id="filter-tag" aria-label="Etiket filtre">
+              <option value="">Etiket (Tümü)</option>
+            </select>
+            <select id="filter-stage" aria-label="Funnel aşaması filtre">
+              <option value="">Funnel aşaması (Tümü)</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="table" aria-label="EPC pipeline tablosu">
+              <thead>
+                <tr>
+                  <th>Firma</th>
+                  <th>Funnel Aşaması</th>
+                  <th>Tahmini Panel</th>
+                  <th>Olasılık %</th>
+                  <th>Ağırlıklı Panel</th>
+                  <th>Son Temas</th>
+                  <th>Sonraki Aksiyon</th>
+                </tr>
+              </thead>
+              <tbody id="pipeline-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="epc" class="page">
+        <div class="toolbar">
+          <div>
+            <h1 class="section-title">EPC Firmaları</h1>
+            <div class="muted">EPC müşteri adayları ve aktif firmalar.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="input search" id="epc-search" placeholder="Firma veya etiket ara" aria-label="EPC arama">
+            <button class="btn primary" data-action="new-epc">Yeni EPC</button>
+          </div>
+        </div>
+        <div id="epc-list" class="list"></div>
+      </section>
+
+      <section id="opportunities" class="page">
+        <div class="toolbar">
+          <div>
+            <h1 class="section-title">Fırsatlar</h1>
+            <div class="muted">EPC firmalara bağlı satış fırsatları.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="input search" id="opp-search" placeholder="Proje veya EPC ara" aria-label="Fırsat arama">
+            <button class="btn primary" data-action="new-opportunity">Yeni Fırsat</button>
+          </div>
+        </div>
+        <div id="opp-list" class="list"></div>
+      </section>
+
+      <section id="offers" class="page">
+        <div class="toolbar">
+          <div>
+            <h1 class="section-title">Teklifler</h1>
+            <div class="muted">Fırsatlara bağlı teklifleri yönetin.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="input search" id="offer-search" placeholder="Teklif no veya proje ara" aria-label="Teklif arama">
+            <button class="btn primary" data-action="new-offer">Yeni Teklif</button>
+          </div>
+        </div>
+        <div id="offer-list" class="list"></div>
+      </section>
+
+      <section id="partners" class="page">
+        <div class="toolbar">
+          <div>
+            <h1 class="section-title">Partner Programı</h1>
+            <div class="muted">Partner hedefleri ve aylık performans.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="input search" id="partner-search" placeholder="Partner veya şehir ara" aria-label="Partner arama">
+            <button class="btn primary" data-action="new-partner">Yeni Partner</button>
+          </div>
+        </div>
+        <div id="partner-list" class="list"></div>
+      </section>
+
+      <section id="settings" class="page">
+        <div class="toolbar">
+          <div>
+            <h1 class="section-title">Ayarlar</h1>
+            <div class="muted">Veri yönetimi ve kısa rehber.</div>
+          </div>
+        </div>
+        <div id="schema-banner"></div>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Veri Yönetimi</h3>
+            <div class="form-group">
+              <button class="btn" id="export-btn">Export JSON</button>
+              <button class="btn" id="import-btn">Import JSON</button>
+              <input type="file" id="import-file" accept="application/json" hidden>
+            </div>
+            <div class="form-group">
+              <button class="btn ghost" id="demo-btn">Demo Data Yükle</button>
+            </div>
+            <div class="form-group">
+              <button class="btn" id="reset-btn">Tüm Veriyi Sıfırla</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Funnel ve Pipeline Rehberi</h3>
+            <p class="muted">Funnel aşamaları EPC firmalarının satış yolculuğunu ifade eder. Pipeline ise her firmanın tahmini panel adetini olasılıkla çarparak ağırlıklı bir görünüm sağlar. Örneğin 1.000 panel ve %40 olasılık = 400 ağırlıklı panel.</p>
+            <p class="muted">Pipeline/Hedef oranı 3x olduğunda, hedefinize ulaşmak için yeterli hacmi oluşturduğunuz kabul edilir.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside class="side-panel" id="side-panel" aria-hidden="true">
+    <header>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <h2 id="panel-title" class="section-title" style="margin:0;">Detay</h2>
+          <div id="panel-subtitle" class="muted"></div>
+        </div>
+        <button class="btn" id="panel-close" aria-label="Paneli kapat">Kapat</button>
+      </div>
+    </header>
+    <div class="content" id="panel-content"></div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = 'albCRM_v1';
+    const SCHEMA_VERSION = 1;
+    const funnelStages = [
+      { label: 'Hedef Listede', probability: 10 },
+      { label: 'İlk Temas', probability: 15 },
+      { label: 'Uygun', probability: 25 },
+      { label: 'Deneme Teklifi', probability: 40 },
+      { label: 'İlk Sipariş', probability: 70 },
+      { label: 'Tekrar Sipariş', probability: 85 }
+    ];
+
+    const defaultData = () => ({
+      version: SCHEMA_VERSION,
+      monthlyTarget: 800,
+      epcAccounts: [],
+      contacts: [],
+      leads: [],
+      opportunities: [],
+      offers: [],
+      partners: []
+    });
+
+    let state = loadState();
+
+    const navButtons = document.querySelectorAll('.nav button');
+    const pages = document.querySelectorAll('.page');
+    const panel = document.getElementById('side-panel');
+    const panelContent = document.getElementById('panel-content');
+    const panelTitle = document.getElementById('panel-title');
+    const panelSubtitle = document.getElementById('panel-subtitle');
+    const toast = document.getElementById('toast');
+
+    navButtons.forEach(btn => btn.addEventListener('click', () => switchPage(btn.dataset.page)));
+    document.getElementById('panel-close').addEventListener('click', closePanel);
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'n' || event.key === 'N') {
+        event.preventDefault();
+        handleNewShortcut();
+      }
+      if (event.key === '/') {
+        event.preventDefault();
+        focusSearch();
+      }
+      if (event.key === 'Escape' && panel.classList.contains('open')) {
+        closePanel();
+      }
+    });
+
+    document.querySelectorAll('[data-action="new-epc"]').forEach(btn => btn.addEventListener('click', () => openEpcForm()));
+    document.querySelectorAll('[data-action="new-opportunity"]').forEach(btn => btn.addEventListener('click', () => openOpportunityForm()));
+    document.querySelectorAll('[data-action="new-offer"]').forEach(btn => btn.addEventListener('click', () => openOfferForm()));
+    document.querySelectorAll('[data-action="new-partner"]').forEach(btn => btn.addEventListener('click', () => openPartnerForm()));
+    document.querySelectorAll('[data-action="new-lead"]').forEach(btn => btn.addEventListener('click', () => openLeadForm()));
+
+    document.getElementById('export-btn').addEventListener('click', exportData);
+    document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-file').click());
+    document.getElementById('import-file').addEventListener('change', importData);
+    document.getElementById('reset-btn').addEventListener('click', resetData);
+    document.getElementById('demo-btn').addEventListener('click', loadDemoData);
+
+    document.getElementById('monthly-target').addEventListener('input', (event) => {
+      state.monthlyTarget = Math.max(0, Number(event.target.value));
+      saveState();
+      renderFunnel();
+    });
+
+    const searchInputs = {
+      dashboard: null,
+      funnel: document.getElementById('funnel-search'),
+      epc: document.getElementById('epc-search'),
+      opportunities: document.getElementById('opp-search'),
+      offers: document.getElementById('offer-search'),
+      partners: document.getElementById('partner-search'),
+      settings: null
+    };
+
+    Object.values(searchInputs).forEach(input => {
+      if (input) {
+        input.addEventListener('input', () => renderAll());
+      }
+    });
+
+    ['filter-city', 'filter-status', 'filter-segment', 'filter-tag', 'filter-stage'].forEach(id => {
+      document.getElementById(id).addEventListener('change', () => renderFunnel());
+    });
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultData();
+        const parsed = JSON.parse(raw);
+        return parsed;
+      } catch (error) {
+        return defaultData();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function switchPage(pageId) {
+      navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.page === pageId));
+      pages.forEach(page => page.classList.toggle('active', page.id === pageId));
+    }
+
+    function focusSearch() {
+      const activePage = document.querySelector('.page.active');
+      if (!activePage) return;
+      const input = searchInputs[activePage.id];
+      if (input) input.focus();
+    }
+
+    function handleNewShortcut() {
+      const activePage = document.querySelector('.page.active');
+      if (!activePage) return;
+      const id = activePage.id;
+      if (id === 'epc' || id === 'funnel') return openEpcForm();
+      if (id === 'opportunities') return openOpportunityForm();
+      if (id === 'offers') return openOfferForm();
+      if (id === 'partners') return openPartnerForm();
+      if (id === 'dashboard') return openLeadForm();
+    }
+
+    function openPanel(title, subtitle, content) {
+      panelTitle.textContent = title;
+      panelSubtitle.textContent = subtitle || '';
+      panelContent.innerHTML = '';
+      panelContent.appendChild(content);
+      panel.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePanel() {
+      panel.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+
+    function uuid() {
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function renderAll() {
+      renderDashboard();
+      renderFunnel();
+      renderEpc();
+      renderOpportunities();
+      renderOffers();
+      renderPartners();
+    }
+
+    function filterSearch(items, query, fields) {
+      if (!query) return items;
+      const term = query.toLowerCase();
+      return items.filter(item => fields.some(field => (item[field] || '').toString().toLowerCase().includes(term)));
+    }
+
+    function renderDashboard() {
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
+      const offersThisMonth = state.offers.filter(offer => {
+        const date = offer.olusturmaTarihi ? new Date(offer.olusturmaTarihi) : null;
+        return date && date.getMonth() === month && date.getFullYear() === year;
+      });
+      const acceptedOffers = offersThisMonth.filter(o => o.durum === 'kabul');
+      const sentOffers = offersThisMonth.filter(o => o.durum === 'gonderildi');
+      const lostOffers = offersThisMonth.filter(o => o.durum === 'red');
+
+      const panelsSold = acceptedOffers.reduce((sum, offer) => sum + Number(offer.panelAdedi || 0), 0);
+      document.getElementById('kpi-panels').textContent = panelsSold.toLocaleString('tr-TR');
+
+      const newEpcs = state.epcAccounts.filter(epc => {
+        const date = epc.olusturmaTarihi ? new Date(epc.olusturmaTarihi) : null;
+        return date && date.getMonth() === month && date.getFullYear() === year;
+      });
+      document.getElementById('kpi-epc').textContent = newEpcs.length;
+      document.getElementById('kpi-offers').textContent = `${sentOffers.length} / ${acceptedOffers.length} / ${lostOffers.length}`;
+
+      const partnersProgress = calculatePartnerProgress();
+      document.getElementById('kpi-partners').textContent = `${partnersProgress}%`;
+
+      const topEpc = [...state.epcAccounts]
+        .map(epc => ({
+          ...epc,
+          weighted: (Number(epc.tahminiPanel || 0) * Number(epc.olasilik || 0)) / 100
+        }))
+        .sort((a, b) => b.weighted - a.weighted)
+        .slice(0, 5);
+
+      const topEpcList = document.getElementById('kpi-top-epc');
+      topEpcList.innerHTML = '';
+      if (!topEpc.length) {
+        topEpcList.innerHTML = '<div class="muted">Henüz kayıt yok.</div>';
+      } else {
+        topEpc.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'list-item';
+          div.textContent = `${item.firmaAdi} • ${Math.round(item.weighted)} panel`;
+          topEpcList.appendChild(div);
+        });
+      }
+
+      const upcoming = state.epcAccounts.filter(epc => epc.sonrakiAksiyon)
+        .filter(epc => {
+          const date = new Date(epc.sonrakiAksiyon);
+          const diff = (date - now) / (1000 * 60 * 60 * 24);
+          return diff >= 0 && diff <= 7;
+        });
+
+      const actionsList = document.getElementById('kpi-actions');
+      actionsList.innerHTML = '';
+      if (!upcoming.length) {
+        actionsList.innerHTML = '<div class="muted">Önümüzdeki 7 gün için aksiyon yok.</div>';
+      } else {
+        upcoming.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'list-item';
+          div.textContent = `${item.firmaAdi} • ${formatDate(item.sonrakiAksiyon)}`;
+          actionsList.appendChild(div);
+        });
+      }
+
+      renderLeads();
+    }
+
+    function renderLeads() {
+      const container = document.getElementById('lead-list');
+      container.innerHTML = '';
+      if (!state.leads.length) {
+        container.innerHTML = '<div class="muted">Henüz lead yok. Yeni lead ekleyin.</div>';
+        return;
+      }
+      state.leads.forEach(lead => {
+        const card = document.createElement('div');
+        card.className = 'list-item';
+        card.innerHTML = `
+          <strong>${lead.adSoyadOrFirma}</strong>
+          <div class="muted">${lead.kaynak || 'Kaynak yok'} • ${lead.asama}</div>
+          <div class="list-actions">
+            <button class="btn" data-action="lead-detail" data-id="${lead.id}">Detay</button>
+            <button class="btn" data-action="lead-edit" data-id="${lead.id}">Düzenle</button>
+            <button class="btn" data-action="lead-delete" data-id="${lead.id}">Sil</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll('[data-action="lead-detail"]').forEach(btn => btn.addEventListener('click', () => showLeadDetail(btn.dataset.id)));
+      container.querySelectorAll('[data-action="lead-edit"]').forEach(btn => btn.addEventListener('click', () => openLeadForm(findById(state.leads, btn.dataset.id))));
+      container.querySelectorAll('[data-action="lead-delete"]').forEach(btn => btn.addEventListener('click', () => deleteItem('leads', btn.dataset.id)));
+    }
+
+    function renderFunnel() {
+      const search = document.getElementById('funnel-search').value.trim();
+      const filters = {
+        city: document.getElementById('filter-city').value,
+        status: document.getElementById('filter-status').value,
+        segment: document.getElementById('filter-segment').value,
+        tag: document.getElementById('filter-tag').value,
+        stage: document.getElementById('filter-stage').value
+      };
+
+      const uniqueCities = [...new Set(state.epcAccounts.map(epc => epc.sehir).filter(Boolean))];
+      const uniqueTags = [...new Set(state.epcAccounts.flatMap(epc => epc.etiketler || []))];
+      const citySelect = document.getElementById('filter-city');
+      const tagSelect = document.getElementById('filter-tag');
+      const stageSelect = document.getElementById('filter-stage');
+
+      citySelect.innerHTML = '<option value="">Şehir (Tümü)</option>' + uniqueCities.map(c => `<option value="${c}">${c}</option>`).join('');
+      tagSelect.innerHTML = '<option value="">Etiket (Tümü)</option>' + uniqueTags.map(t => `<option value="${t}">${t}</option>`).join('');
+      stageSelect.innerHTML = '<option value="">Funnel aşaması (Tümü)</option>' + funnelStages.map(s => `<option value="${s.label}">${s.label}</option>`).join('');
+      citySelect.value = filters.city;
+      tagSelect.value = filters.tag;
+      stageSelect.value = filters.stage;
+
+      let epcs = filterSearch(state.epcAccounts, search, ['firmaAdi', 'sehir']);
+      if (filters.city) epcs = epcs.filter(epc => epc.sehir === filters.city);
+      if (filters.status) epcs = epcs.filter(epc => epc.durum === filters.status);
+      if (filters.segment) epcs = epcs.filter(epc => epc.segment === filters.segment);
+      if (filters.tag) epcs = epcs.filter(epc => (epc.etiketler || []).includes(filters.tag));
+      if (filters.stage) epcs = epcs.filter(epc => epc.funnelStage === filters.stage);
+
+      const funnelCards = document.getElementById('funnel-cards');
+      funnelCards.innerHTML = '';
+      funnelStages.forEach(stage => {
+        const count = state.epcAccounts.filter(epc => epc.funnelStage === stage.label).length;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="muted">${stage.label}</div>
+          <h2>${count}</h2>
+        `;
+        funnelCards.appendChild(card);
+      });
+
+      const pipelineTotal = epcs.reduce((sum, epc) => sum + weightedPipeline(epc), 0);
+      document.getElementById('pipeline-total').textContent = Math.round(pipelineTotal).toLocaleString('tr-TR');
+      const targetInput = document.getElementById('monthly-target');
+      targetInput.value = state.monthlyTarget || 0;
+      const ratio = state.monthlyTarget ? (pipelineTotal / state.monthlyTarget).toFixed(1) : 0;
+      document.getElementById('pipeline-ratio').textContent = `${ratio}x`;
+
+      const tbody = document.getElementById('pipeline-table');
+      tbody.innerHTML = '';
+      epcs.sort((a, b) => weightedPipeline(b) - weightedPipeline(a)).forEach(epc => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${epc.firmaAdi}</td>
+          <td>
+            <select data-action="stage" data-id="${epc.id}">
+              ${funnelStages.map(stage => `<option value="${stage.label}" ${epc.funnelStage === stage.label ? 'selected' : ''}>${stage.label}</option>`).join('')}
+            </select>
+          </td>
+          <td><input class="input" type="number" min="0" data-action="panel" data-id="${epc.id}" value="${epc.tahminiPanel || 0}"></td>
+          <td><input class="input" type="number" min="0" max="100" data-action="prob" data-id="${epc.id}" value="${epc.olasilik || 0}"></td>
+          <td>${Math.round(weightedPipeline(epc))}</td>
+          <td><input class="input" type="date" data-action="last" data-id="${epc.id}" value="${epc.sonTemasTarihi || ''}"></td>
+          <td><input class="input" type="text" data-action="next" data-id="${epc.id}" value="${epc.sonrakiAksiyon || ''}" placeholder="YYYY-AA-GG"></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      tbody.querySelectorAll('select[data-action="stage"]').forEach(select => {
+        select.addEventListener('change', () => {
+          const epc = findById(state.epcAccounts, select.dataset.id);
+          const stage = funnelStages.find(s => s.label === select.value);
+          epc.funnelStage = select.value;
+          epc.olasilik = stage ? stage.probability : epc.olasilik;
+          saveState();
+          renderAll();
+        });
+      });
+
+      tbody.querySelectorAll('input[data-action]').forEach(input => {
+        input.addEventListener('change', () => {
+          const epc = findById(state.epcAccounts, input.dataset.id);
+          if (!epc) return;
+          if (input.dataset.action === 'panel') epc.tahminiPanel = Math.max(0, Number(input.value));
+          if (input.dataset.action === 'prob') epc.olasilik = Math.max(0, Math.min(100, Number(input.value)));
+          if (input.dataset.action === 'last') epc.sonTemasTarihi = input.value;
+          if (input.dataset.action === 'next') epc.sonrakiAksiyon = input.value;
+          saveState();
+          renderAll();
+        });
+      });
+    }
+
+    function renderEpc() {
+      const search = document.getElementById('epc-search').value.trim();
+      let epcs = filterSearch(state.epcAccounts, search, ['firmaAdi', 'sehir', 'segment']);
+      const list = document.getElementById('epc-list');
+      list.innerHTML = '';
+      if (!epcs.length) {
+        list.innerHTML = '<div class="muted">Henüz EPC yok. Yeni EPC ekleyin.</div>';
+        return;
+      }
+      epcs.forEach(epc => {
+        const tags = (epc.etiketler || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+        const card = document.createElement('div');
+        card.className = 'list-item';
+        card.innerHTML = `
+          <strong>${epc.firmaAdi}</strong>
+          <div class="muted">${epc.sehir || 'Şehir yok'} • ${epc.segment || 'segment'} • ${epc.durum || 'durum'}</div>
+          <div>${tags}</div>
+          <div class="list-actions">
+            <button class="btn" data-action="epc-detail" data-id="${epc.id}">Detay</button>
+            <button class="btn" data-action="epc-edit" data-id="${epc.id}">Düzenle</button>
+            <button class="btn" data-action="epc-delete" data-id="${epc.id}">Sil</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      list.querySelectorAll('[data-action="epc-detail"]').forEach(btn => btn.addEventListener('click', () => showEpcDetail(btn.dataset.id)));
+      list.querySelectorAll('[data-action="epc-edit"]').forEach(btn => btn.addEventListener('click', () => openEpcForm(findById(state.epcAccounts, btn.dataset.id))));
+      list.querySelectorAll('[data-action="epc-delete"]').forEach(btn => btn.addEventListener('click', () => deleteItem('epcAccounts', btn.dataset.id)));
+    }
+
+    function renderOpportunities() {
+      const search = document.getElementById('opp-search').value.trim();
+      let opportunities = filterSearch(state.opportunities, search, ['projeAdi', 'il']);
+      const list = document.getElementById('opp-list');
+      list.innerHTML = '';
+      if (!opportunities.length) {
+        list.innerHTML = '<div class="muted">Henüz fırsat yok. Yeni fırsat ekleyin.</div>';
+        return;
+      }
+      opportunities.forEach(opp => {
+        const epc = findById(state.epcAccounts, opp.epcId);
+        const card = document.createElement('div');
+        card.className = 'list-item';
+        card.innerHTML = `
+          <strong>${opp.projeAdi}</strong>
+          <div class="muted">${epc ? epc.firmaAdi : 'EPC yok'} • ${opp.asama}</div>
+          <div class="list-actions">
+            <button class="btn" data-action="opp-detail" data-id="${opp.id}">Detay</button>
+            <button class="btn" data-action="opp-edit" data-id="${opp.id}">Düzenle</button>
+            <button class="btn" data-action="opp-delete" data-id="${opp.id}">Sil</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      list.querySelectorAll('[data-action="opp-detail"]').forEach(btn => btn.addEventListener('click', () => showOpportunityDetail(btn.dataset.id)));
+      list.querySelectorAll('[data-action="opp-edit"]').forEach(btn => btn.addEventListener('click', () => openOpportunityForm(findById(state.opportunities, btn.dataset.id))));
+      list.querySelectorAll('[data-action="opp-delete"]').forEach(btn => btn.addEventListener('click', () => deleteItem('opportunities', btn.dataset.id)));
+    }
+
+    function renderOffers() {
+      const search = document.getElementById('offer-search').value.trim();
+      let offers = filterSearch(state.offers, search, ['teklifNo', 'panelModeli']);
+      const list = document.getElementById('offer-list');
+      list.innerHTML = '';
+      if (!offers.length) {
+        list.innerHTML = '<div class="muted">Henüz teklif yok. Yeni teklif ekleyin.</div>';
+        return;
+      }
+      offers.forEach(offer => {
+        const opp = findById(state.opportunities, offer.opportunityId);
+        const card = document.createElement('div');
+        card.className = 'list-item';
+        card.innerHTML = `
+          <strong>${offer.teklifNo || 'Teklif'}</strong>
+          <div class="muted">${opp ? opp.projeAdi : 'Fırsat yok'} • ${offer.durum}</div>
+          <div class="list-actions">
+            <button class="btn" data-action="offer-detail" data-id="${offer.id}">Detay</button>
+            <button class="btn" data-action="offer-edit" data-id="${offer.id}">Düzenle</button>
+            <button class="btn" data-action="offer-delete" data-id="${offer.id}">Sil</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      list.querySelectorAll('[data-action="offer-detail"]').forEach(btn => btn.addEventListener('click', () => showOfferDetail(btn.dataset.id)));
+      list.querySelectorAll('[data-action="offer-edit"]').forEach(btn => btn.addEventListener('click', () => openOfferForm(findById(state.offers, btn.dataset.id))));
+      list.querySelectorAll('[data-action="offer-delete"]').forEach(btn => btn.addEventListener('click', () => deleteItem('offers', btn.dataset.id)));
+    }
+
+    function renderPartners() {
+      const search = document.getElementById('partner-search').value.trim();
+      let partners = filterSearch(state.partners, search, ['firmaAdi', 'sehir']);
+      const list = document.getElementById('partner-list');
+      list.innerHTML = '';
+      if (!partners.length) {
+        list.innerHTML = '<div class="muted">Henüz partner yok. Yeni partner ekleyin.</div>';
+        return;
+      }
+      partners.forEach(partner => {
+        const card = document.createElement('div');
+        card.className = 'list-item';
+        card.innerHTML = `
+          <strong>${partner.firmaAdi}</strong>
+          <div class="muted">${partner.sehir || 'Şehir yok'} • ${partner.durum}</div>
+          <div class="list-actions">
+            <button class="btn" data-action="partner-detail" data-id="${partner.id}">Detay</button>
+            <button class="btn" data-action="partner-edit" data-id="${partner.id}">Düzenle</button>
+            <button class="btn" data-action="partner-delete" data-id="${partner.id}">Sil</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      list.querySelectorAll('[data-action="partner-detail"]').forEach(btn => btn.addEventListener('click', () => showPartnerDetail(btn.dataset.id)));
+      list.querySelectorAll('[data-action="partner-edit"]').forEach(btn => btn.addEventListener('click', () => openPartnerForm(findById(state.partners, btn.dataset.id))));
+      list.querySelectorAll('[data-action="partner-delete"]').forEach(btn => btn.addEventListener('click', () => deleteItem('partners', btn.dataset.id)));
+    }
+
+    function showSchemaBanner() {
+      const banner = document.getElementById('schema-banner');
+      banner.innerHTML = '';
+      if (state.version !== SCHEMA_VERSION) {
+        const div = document.createElement('div');
+        div.className = 'banner';
+        div.innerHTML = `
+          <strong>Veri sürümü uyumsuz.</strong>
+          <div class="muted">Yeni sürüm için sıfırlama gerekebilir.</div>
+          <button class="btn" id="schema-reset">Şimdi Sıfırla</button>
+        `;
+        banner.appendChild(div);
+        div.querySelector('#schema-reset').addEventListener('click', resetData);
+      }
+    }
+
+    function weightedPipeline(epc) {
+      return (Number(epc.tahminiPanel || 0) * Number(epc.olasilik || 0)) / 100;
+    }
+
+    function findById(list, id) {
+      return list.find(item => item.id === id);
+    }
+
+    function deleteItem(collection, id) {
+      if (!confirm('Silmek istediğinize emin misiniz?')) return;
+      state[collection] = state[collection].filter(item => item.id !== id);
+      saveState();
+      renderAll();
+      showToast('Kayıt silindi.');
+    }
+
+    function openEpcForm(data = null) {
+      const isEdit = Boolean(data);
+      const form = document.createElement('form');
+      form.innerHTML = `
+        <div class="form-group">
+          <label>Firma Adı *</label>
+          <input class="input" name="firmaAdi" required value="${data?.firmaAdi || ''}">
+        </div>
+        <div class="form-group">
+          <label>Şehir</label>
+          <input class="input" name="sehir" value="${data?.sehir || ''}">
+        </div>
+        <div class="form-group">
+          <label>Segment</label>
+          <select name="segment">
+            <option value="">Seçin</option>
+            <option value="rooftop" ${data?.segment === 'rooftop' ? 'selected' : ''}>Rooftop</option>
+            <option value="agri" ${data?.segment === 'agri' ? 'selected' : ''}>Agri</option>
+            <option value="industrial" ${data?.segment === 'industrial' ? 'selected' : ''}>Industrial</option>
+            <option value="mixed" ${data?.segment === 'mixed' ? 'selected' : ''}>Mixed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Durum</label>
+          <select name="durum">
+            <option value="hedef" ${data?.durum === 'hedef' ? 'selected' : ''}>Hedef</option>
+            <option value="aktif" ${data?.durum === 'aktif' ? 'selected' : ''}>Aktif</option>
+            <option value="pasif" ${data?.durum === 'pasif' ? 'selected' : ''}>Pasif</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Funnel Aşaması</label>
+          <select name="funnelStage">
+            ${funnelStages.map(stage => `<option value="${stage.label}" ${data?.funnelStage === stage.label ? 'selected' : ''}>${stage.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tahmini Panel</label>
+          <input class="input" type="number" min="0" name="tahminiPanel" value="${data?.tahminiPanel || 0}">
+        </div>
+        <div class="form-group">
+          <label>Olasılık %</label>
+          <input class="input" type="number" min="0" max="100" name="olasilik" value="${data?.olasilik || 0}">
+        </div>
+        <div class="form-group">
+          <label>Etiketler (virgülle)</label>
+          <input class="input" name="etiketler" value="${data?.etiketler?.join(', ') || ''}">
+        </div>
+        <div class="form-group">
+          <label>Notlar</label>
+          <textarea name="notlar">${data?.notlar || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label>Son Temas Tarihi</label>
+          <input class="input" type="date" name="sonTemasTarihi" value="${data?.sonTemasTarihi || ''}">
+        </div>
+        <div class="form-group">
+          <label>Sonraki Aksiyon</label>
+          <input class="input" type="date" name="sonrakiAksiyon" value="${data?.sonrakiAksiyon || ''}">
+        </div>
+        <div class="form-group">
+          <button class="btn primary" type="submit">Kaydet</button>
+        </div>
+      `;
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const funnelStage = formData.get('funnelStage') || funnelStages[0].label;
+        const stage = funnelStages.find(s => s.label === funnelStage);
+        const entry = {
+          id: data?.id || uuid(),
+          firmaAdi: formData.get('firmaAdi').trim(),
+          sehir: formData.get('sehir').trim(),
+          segment: formData.get('segment'),
+          kapasiteTahminiPanellerAy: data?.kapasiteTahminiPanellerAy || 0,
+          notlar: formData.get('notlar').trim(),
+          durum: formData.get('durum'),
+          funnelStage,
+          tahminiPanel: Math.max(0, Number(formData.get('tahminiPanel'))),
+          olasilik: Math.max(0, Math.min(100, Number(formData.get('olasilik') || stage?.probability || 0))),
+          olusturmaTarihi: data?.olusturmaTarihi || new Date().toISOString(),
+          sonTemasTarihi: formData.get('sonTemasTarihi'),
+          sonrakiAksiyon: formData.get('sonrakiAksiyon'),
+          etiketler: formData.get('etiketler').split(',').map(tag => tag.trim()).filter(Boolean)
+        };
+        if (!entry.firmaAdi) {
+          alert('Firma adı zorunludur.');
+          return;
+        }
+        if (isEdit) {
+          state.epcAccounts = state.epcAccounts.map(epc => epc.id === entry.id ? entry : epc);
+        } else {
+          state.epcAccounts.push(entry);
+        }
+        saveState();
+        renderAll();
+        showToast('EPC kaydedildi.');
+        closePanel();
+      });
+
+      openPanel(isEdit ? 'EPC Düzenle' : 'Yeni EPC', isEdit ? data.firmaAdi : 'Yeni firma oluştur', form);
+    }
+
+    function openLeadForm(data = null) {
+      const isEdit = Boolean(data);
+      const form = document.createElement('form');
+      form.innerHTML = `
+        <div class="form-group">
+          <label>Ad Soyad / Firma *</label>
+          <input class="input" name="adSoyadOrFirma" required value="${data?.adSoyadOrFirma || ''}">
+        </div>
+        <div class="form-group">
+          <label>Kaynak</label>
+          <select name="kaynak">
+            <option value="referans" ${data?.kaynak === 'referans' ? 'selected' : ''}>Referans</option>
+            <option value="reklam" ${data?.kaynak === 'reklam' ? 'selected' : ''}>Reklam</option>
+            <option value="fuar" ${data?.kaynak === 'fuar' ? 'selected' : ''}>Fuar</option>
+            <option value="arama" ${data?.kaynak === 'arama' ? 'selected' : ''}>Arama</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tip</label>
+          <select name="tip">
+            <option value="son_kullanici" ${data?.tip === 'son_kullanici' ? 'selected' : ''}>Son Kullanıcı</option>
+            <option value="epc_adayi" ${data?.tip === 'epc_adayi' ? 'selected' : ''}>EPC Adayı</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>İl</label>
+          <input class="input" name="il" value="${data?.il || ''}">
+        </div>
+        <div class="form-group">
+          <label>Aşama</label>
+          <select name="asama">
+            <option value="yeni" ${data?.asama === 'yeni' ? 'selected' : ''}>Yeni</option>
+            <option value="iletisim_kuruldu" ${data?.asama === 'iletisim_kuruldu' ? 'selected' : ''}>İletişim Kuruldu</option>
+            <option value="uygun" ${data?.asama === 'uygun' ? 'selected' : ''}>Uygun</option>
+            <option value="teklif_istegi" ${data?.asama === 'teklif_istegi' ? 'selected' : ''}>Teklif İsteği</option>
+            <option value="kaybedildi" ${data?.asama === 'kaybedildi' ? 'selected' : ''}>Kaybedildi</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notlar</label>
+          <textarea name="notlar">${data?.notlar || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label>Son Temas Tarihi</label>
+          <input class="input" type="date" name="sonTemasTarihi" value="${data?.sonTemasTarihi || ''}">
+        </div>
+        <div class="form-group">
+          <label>Sonraki Aksiyon</label>
+          <input class="input" type="date" name="sonrakiAksiyon" value="${data?.sonrakiAksiyon || ''}">
+        </div>
+        <div class="form-group">
+          <button class="btn primary" type="submit">Kaydet</button>
+        </div>
+      `;
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const entry = {
+          id: data?.id || uuid(),
+          kaynak: formData.get('kaynak'),
+          adSoyadOrFirma: formData.get('adSoyadOrFirma').trim(),
+          tip: formData.get('tip'),
+          il: formData.get('il').trim(),
+          notlar: formData.get('notlar').trim(),
+          asama: formData.get('asama'),
+          olusturmaTarihi: data?.olusturmaTarihi || new Date().toISOString(),
+          sonTemasTarihi: formData.get('sonTemasTarihi'),
+          sonrakiAksiyon: formData.get('sonrakiAksiyon')
+        };
+        if (!entry.adSoyadOrFirma) {
+          alert('Lead adı zorunludur.');
+          return;
+        }
+        if (isEdit) {
+          state.leads = state.leads.map(lead => lead.id === entry.id ? entry : lead);
+        } else {
+          state.leads.push(entry);
+        }
+        saveState();
+        renderAll();
+        showToast('Lead kaydedildi.');
+        closePanel();
+      });
+
+      openPanel(isEdit ? 'Lead Düzenle' : 'Yeni Lead', isEdit ? data.adSoyadOrFirma : 'Lead kaydı', form);
+    }
+
+    function openOpportunityForm(data = null) {
+      const isEdit = Boolean(data);
+      const form = document.createElement('form');
+      const epcOptions = state.epcAccounts.map(epc => `<option value="${epc.id}" ${data?.epcId === epc.id ? 'selected' : ''}>${epc.firmaAdi}</option>`).join('');
+      form.innerHTML = `
+        <div class="form-group">
+          <label>EPC Firması *</label>
+          <select name="epcId" required>
+            <option value="">Seçin</option>
+            ${epcOptions}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Proje Adı</label>
+          <input class="input" name="projeAdi" value="${data?.projeAdi || ''}">
+        </div>
+        <div class="form-group">
+          <label>İl</label>
+          <input class="input" name="il" value="${data?.il || ''}">
+        </div>
+        <div class="form-group">
+          <label>Güç (kW)</label>
+          <input class="input" type="number" min="0" name="gucKw" value="${data?.gucKw || 0}">
+        </div>
+        <div class="form-group">
+          <label>Tahmini Panel Adedi *</label>
+          <input class="input" type="number" min="0" name="tahminiPanelAdedi" required value="${data?.tahminiPanelAdedi || 0}">
+        </div>
+        <div class="form-group">
+          <label>Aşama</label>
+          <select name="asama">
+            <option value="kesif" ${data?.asama === 'kesif' ? 'selected' : ''}>Keşif</option>
+            <option value="teklif_hazirlaniyor" ${data?.asama === 'teklif_hazirlaniyor' ? 'selected' : ''}>Teklif Hazırlanıyor</option>
+            <option value="teklif_verildi" ${data?.asama === 'teklif_verildi' ? 'selected' : ''}>Teklif Verildi</option>
+            <option value="muzakere" ${data?.asama === 'muzakere' ? 'selected' : ''}>Müzakere</option>
+            <option value="kazandi" ${data?.asama === 'kazandi' ? 'selected' : ''}>Kazandı</option>
+            <option value="kaybedildi" ${data?.asama === 'kaybedildi' ? 'selected' : ''}>Kaybedildi</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Kapanış Tarihi Tahmini</label>
+          <input class="input" type="date" name="kapanisTarihiTahmini" value="${data?.kapanisTarihiTahmini || ''}">
+        </div>
+        <div class="form-group">
+          <label>Olasılık %</label>
+          <input class="input" type="number" min="0" max="100" name="olasilik" value="${data?.olasilik || 0}">
+        </div>
+        <div class="form-group">
+          <label>Notlar</label>
+          <textarea name="notlar">${data?.notlar || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <button class="btn primary" type="submit">Kaydet</button>
+        </div>
+      `;
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const epcId = formData.get('epcId');
+        const panelCount = Number(formData.get('tahminiPanelAdedi'));
+        if (!epcId) {
+          alert('EPC seçimi zorunludur.');
+          return;
+        }
+        if (panelCount < 0) {
+          alert('Panel adedi negatif olamaz.');
+          return;
+        }
+        const entry = {
+          id: data?.id || uuid(),
+          epcId,
+          projeAdi: formData.get('projeAdi').trim(),
+          il: formData.get('il').trim(),
+          gucKw: Math.max(0, Number(formData.get('gucKw'))),
+          tahminiPanelAdedi: Math.max(0, panelCount),
+          asama: formData.get('asama'),
+          kapanisTarihiTahmini: formData.get('kapanisTarihiTahmini'),
+          olasilik: Math.max(0, Math.min(100, Number(formData.get('olasilik')))),
+          notlar: formData.get('notlar').trim()
+        };
+        if (isEdit) {
+          state.opportunities = state.opportunities.map(opp => opp.id === entry.id ? entry : opp);
+        } else {
+          state.opportunities.push(entry);
+        }
+        saveState();
+        renderAll();
+        showToast('Fırsat kaydedildi.');
+        closePanel();
+      });
+
+      openPanel(isEdit ? 'Fırsat Düzenle' : 'Yeni Fırsat', 'EPC bağlantılı fırsat', form);
+    }
+
+    function openOfferForm(data = null) {
+      const isEdit = Boolean(data);
+      const form = document.createElement('form');
+      const oppOptions = state.opportunities.map(opp => {
+        const epc = findById(state.epcAccounts, opp.epcId);
+        return `<option value="${opp.id}" ${data?.opportunityId === opp.id ? 'selected' : ''}>${opp.projeAdi || 'Proje'} • ${epc ? epc.firmaAdi : 'EPC'}</option>`;
+      }).join('');
+      form.innerHTML = `
+        <div class="form-group">
+          <label>Fırsat *</label>
+          <select name="opportunityId" required>
+            <option value="">Seçin</option>
+            ${oppOptions}
+          </select>
+          <button type="button" class="btn" id="inline-opp">Yeni Fırsat Oluştur</button>
+        </div>
+        <div id="inline-opp-form" style="display:none;">
+          <div class="form-group">
+            <label>EPC Firması *</label>
+            <select name="inlineEpcId">
+              <option value="">Seçin</option>
+              ${state.epcAccounts.map(epc => `<option value="${epc.id}">${epc.firmaAdi}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Proje Adı</label>
+            <input class="input" name="inlineProjeAdi">
+          </div>
+          <div class="form-group">
+            <label>Tahmini Panel Adedi *</label>
+            <input class="input" type="number" min="0" name="inlinePanel" value="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Teklif No</label>
+          <input class="input" name="teklifNo" value="${data?.teklifNo || ''}">
+        </div>
+        <div class="form-group">
+          <label>Panel Modeli</label>
+          <input class="input" name="panelModeli" value="${data?.panelModeli || ''}">
+        </div>
+        <div class="form-group">
+          <label>Panel Adedi *</label>
+          <input class="input" type="number" min="0" name="panelAdedi" required value="${data?.panelAdedi || 0}">
+        </div>
+        <div class="form-group">
+          <label>Birim Fiyat (USD)</label>
+          <input class="input" type="number" min="0" name="birimFiyatUsd" value="${data?.birimFiyatUsd || 0}">
+        </div>
+        <div class="form-group">
+          <label>Toplam (USD)</label>
+          <input class="input" type="number" min="0" name="toplamUsd" value="${data?.toplamUsd || 0}">
+        </div>
+        <div class="form-group">
+          <label>KDV Oranı</label>
+          <input class="input" type="number" min="0" name="kdvOrani" value="${data?.kdvOrani || 0}">
+        </div>
+        <div class="form-group">
+          <label>Para Birimi</label>
+          <input class="input" name="paraBirimi" value="${data?.paraBirimi || 'USD'}">
+        </div>
+        <div class="form-group">
+          <label>Teslim Şekli</label>
+          <input class="input" name="teslimSekli" value="${data?.teslimSekli || ''}">
+        </div>
+        <div class="form-group">
+          <label>Termin Notu</label>
+          <input class="input" name="terminNotu" value="${data?.terminNotu || ''}">
+        </div>
+        <div class="form-group">
+          <label>Durum</label>
+          <select name="durum">
+            <option value="taslak" ${data?.durum === 'taslak' ? 'selected' : ''}>Taslak</option>
+            <option value="gonderildi" ${data?.durum === 'gonderildi' ? 'selected' : ''}>Gönderildi</option>
+            <option value="kabul" ${data?.durum === 'kabul' ? 'selected' : ''}>Kabul</option>
+            <option value="red" ${data?.durum === 'red' ? 'selected' : ''}>Red</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <button class="btn primary" type="submit">Kaydet</button>
+        </div>
+      `;
+
+      const inlineBtn = form.querySelector('#inline-opp');
+      const inlineForm = form.querySelector('#inline-opp-form');
+      inlineBtn.addEventListener('click', () => {
+        inlineForm.style.display = inlineForm.style.display === 'none' ? 'block' : 'none';
+      });
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        let opportunityId = formData.get('opportunityId');
+        if (!opportunityId && inlineForm.style.display === 'block') {
+          const epcId = formData.get('inlineEpcId');
+          const panelCount = Number(formData.get('inlinePanel'));
+          if (!epcId || panelCount < 0) {
+            alert('Inline fırsat için EPC ve panel adedi zorunludur.');
+            return;
+          }
+          const newOpp = {
+            id: uuid(),
+            epcId,
+            projeAdi: formData.get('inlineProjeAdi').trim() || 'Yeni Proje',
+            il: '',
+            gucKw: 0,
+            tahminiPanelAdedi: panelCount,
+            asama: 'kesif',
+            kapanisTarihiTahmini: '',
+            olasilik: 0,
+            notlar: ''
+          };
+          state.opportunities.push(newOpp);
+          opportunityId = newOpp.id;
+        }
+        if (!opportunityId) {
+          alert('Fırsat seçimi zorunludur.');
+          return;
+        }
+        const panelCount = Number(formData.get('panelAdedi'));
+        if (panelCount < 0) {
+          alert('Panel adedi negatif olamaz.');
+          return;
+        }
+        const entry = {
+          id: data?.id || uuid(),
+          opportunityId,
+          teklifNo: formData.get('teklifNo').trim(),
+          panelModeli: formData.get('panelModeli').trim(),
+          panelAdedi: Math.max(0, panelCount),
+          birimFiyatUsd: Math.max(0, Number(formData.get('birimFiyatUsd'))),
+          toplamUsd: Math.max(0, Number(formData.get('toplamUsd'))),
+          kdvOrani: Math.max(0, Number(formData.get('kdvOrani'))),
+          paraBirimi: formData.get('paraBirimi').trim(),
+          teslimSekli: formData.get('teslimSekli').trim(),
+          terminNotu: formData.get('terminNotu').trim(),
+          durum: formData.get('durum'),
+          olusturmaTarihi: data?.olusturmaTarihi || new Date().toISOString()
+        };
+        if (isEdit) {
+          state.offers = state.offers.map(offer => offer.id === entry.id ? entry : offer);
+        } else {
+          state.offers.push(entry);
+        }
+        saveState();
+        renderAll();
+        showToast('Teklif kaydedildi.');
+        closePanel();
+      });
+
+      openPanel(isEdit ? 'Teklif Düzenle' : 'Yeni Teklif', 'Fırsat bazlı teklif', form);
+    }
+
+    function openPartnerForm(data = null) {
+      const isEdit = Boolean(data);
+      const form = document.createElement('form');
+      form.innerHTML = `
+        <div class="form-group">
+          <label>Firma Adı *</label>
+          <input class="input" name="firmaAdi" required value="${data?.firmaAdi || ''}">
+        </div>
+        <div class="form-group">
+          <label>Yetkili</label>
+          <input class="input" name="yetkili" value="${data?.yetkili || ''}">
+        </div>
+        <div class="form-group">
+          <label>Şehir</label>
+          <input class="input" name="sehir" value="${data?.sehir || ''}">
+        </div>
+        <div class="form-group">
+          <label>Yıllık Hedef (Panel)</label>
+          <input class="input" type="number" min="0" name="yillikHedefPanel" value="${data?.yillikHedefPanel || 0}">
+        </div>
+        <div class="form-group">
+          <label>Aylık Hedef (Panel)</label>
+          <input class="input" type="number" min="0" name="aylikHedefPanel" value="${data?.aylikHedefPanel || 0}">
+        </div>
+        ${monthInputs(data)}
+        <div class="form-group">
+          <label>Durum</label>
+          <select name="durum">
+            <option value="aktif" ${data?.durum === 'aktif' ? 'selected' : ''}>Aktif</option>
+            <option value="pasif" ${data?.durum === 'pasif' ? 'selected' : ''}>Pasif</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notlar</label>
+          <textarea name="notlar">${data?.notlar || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <button class="btn primary" type="submit">Kaydet</button>
+        </div>
+      `;
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const entry = {
+          id: data?.id || uuid(),
+          firmaAdi: formData.get('firmaAdi').trim(),
+          yetkili: formData.get('yetkili').trim(),
+          sehir: formData.get('sehir').trim(),
+          yillikHedefPanel: Math.max(0, Number(formData.get('yillikHedefPanel'))),
+          aylikHedefPanel: Math.max(0, Number(formData.get('aylikHedefPanel'))),
+          ocak: Math.max(0, Number(formData.get('ocak') || 0)),
+          subat: Math.max(0, Number(formData.get('subat') || 0)),
+          mart: Math.max(0, Number(formData.get('mart') || 0)),
+          nisan: Math.max(0, Number(formData.get('nisan') || 0)),
+          mayis: Math.max(0, Number(formData.get('mayis') || 0)),
+          haziran: Math.max(0, Number(formData.get('haziran') || 0)),
+          temmuz: Math.max(0, Number(formData.get('temmuz') || 0)),
+          agustos: Math.max(0, Number(formData.get('agustos') || 0)),
+          eylul: Math.max(0, Number(formData.get('eylul') || 0)),
+          ekim: Math.max(0, Number(formData.get('ekim') || 0)),
+          kasim: Math.max(0, Number(formData.get('kasim') || 0)),
+          aralik: Math.max(0, Number(formData.get('aralik') || 0)),
+          notlar: formData.get('notlar').trim(),
+          durum: formData.get('durum')
+        };
+        if (!entry.firmaAdi) {
+          alert('Firma adı zorunludur.');
+          return;
+        }
+        if (isEdit) {
+          state.partners = state.partners.map(partner => partner.id === entry.id ? entry : partner);
+        } else {
+          state.partners.push(entry);
+        }
+        saveState();
+        renderAll();
+        showToast('Partner kaydedildi.');
+        closePanel();
+      });
+
+      openPanel(isEdit ? 'Partner Düzenle' : 'Yeni Partner', 'Partner hedefleri', form);
+    }
+
+    function monthInputs(data) {
+      const months = ['ocak', 'subat', 'mart', 'nisan', 'mayis', 'haziran', 'temmuz', 'agustos', 'eylul', 'ekim', 'kasim', 'aralik'];
+      return months.map(month => `
+        <div class="form-group">
+          <label>${capitalize(month)}</label>
+          <input class="input" type="number" min="0" name="${month}" value="${data?.[month] || 0}">
+        </div>
+      `).join('');
+    }
+
+    function capitalize(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function showEpcDetail(id) {
+      const epc = findById(state.epcAccounts, id);
+      if (!epc) return;
+      const content = document.createElement('div');
+      const relatedContacts = state.contacts.filter(contact => contact.epcId === id);
+      const relatedOpps = state.opportunities.filter(opp => opp.epcId === id);
+      const relatedOffers = state.offers.filter(offer => {
+        const opp = findById(state.opportunities, offer.opportunityId);
+        return opp && opp.epcId === id;
+      });
+      content.innerHTML = `
+        <div class="card">
+          <div><strong>Firma:</strong> ${epc.firmaAdi}</div>
+          <div><strong>Şehir:</strong> ${epc.sehir || '-'}</div>
+          <div><strong>Funnel:</strong> ${epc.funnelStage}</div>
+          <div><strong>Olasılık:</strong> %${epc.olasilik}</div>
+          <div><strong>Etiketler:</strong> ${(epc.etiketler || []).join(', ') || '-'}</div>
+          <div><strong>Notlar:</strong> ${epc.notlar || '-'}</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>İlgili Kişiler</h3>
+            <button class="btn" data-action="contact-new">Yeni Kişi</button>
+          </div>
+          ${relatedContacts.length ? relatedContacts.map(c => `
+            <div class="list-item">
+              ${c.adSoyad} • ${c.rol || '-'}
+              <div class="list-actions">
+                <button class="btn" data-action="contact-edit" data-id="${c.id}">Düzenle</button>
+                <button class="btn" data-action="contact-delete" data-id="${c.id}">Sil</button>
+              </div>
+            </div>
+          `).join('') : '<div class="muted">Kişi yok.</div>'}
+        </div>
+        <div class="card">
+          <h3>Fırsatlar</h3>
+          ${relatedOpps.length ? relatedOpps.map(o => `<div class="list-item">${o.projeAdi} • ${o.asama}</div>`).join('') : '<div class="muted">Fırsat yok.</div>'}
+        </div>
+        <div class="card">
+          <h3>Teklifler</h3>
+          ${relatedOffers.length ? relatedOffers.map(o => `<div class="list-item">${o.teklifNo || 'Teklif'} • ${o.durum}</div>`).join('') : '<div class="muted">Teklif yok.</div>'}
+        </div>
+      `;
+      content.querySelector('[data-action="contact-new"]').addEventListener('click', () => openContactForm(epc.id));
+      content.querySelectorAll('[data-action="contact-edit"]').forEach(btn => btn.addEventListener('click', () => openContactForm(epc.id, findById(state.contacts, btn.dataset.id))));
+      content.querySelectorAll('[data-action="contact-delete"]').forEach(btn => btn.addEventListener('click', () => deleteItem('contacts', btn.dataset.id)));
+      openPanel('EPC Detay', epc.firmaAdi, content);
+    }
+
+    function openContactForm(epcId, data = null) {
+      const isEdit = Boolean(data);
+      const form = document.createElement('form');
+      form.innerHTML = `
+        <div class="form-group">
+          <label>Ad Soyad *</label>
+          <input class="input" name="adSoyad" required value="${data?.adSoyad || ''}">
+        </div>
+        <div class="form-group">
+          <label>Rol</label>
+          <input class="input" name="rol" value="${data?.rol || ''}">
+        </div>
+        <div class="form-group">
+          <label>Telefon</label>
+          <input class="input" name="telefon" value="${data?.telefon || ''}">
+        </div>
+        <div class="form-group">
+          <label>E-posta</label>
+          <input class="input" type="email" name="email" value="${data?.email || ''}">
+        </div>
+        <div class="form-group">
+          <label>Notlar</label>
+          <textarea name="notlar">${data?.notlar || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <button class="btn primary" type="submit">Kaydet</button>
+        </div>
+      `;
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const entry = {
+          id: data?.id || uuid(),
+          epcId,
+          adSoyad: formData.get('adSoyad').trim(),
+          rol: formData.get('rol').trim(),
+          telefon: formData.get('telefon').trim(),
+          email: formData.get('email').trim(),
+          notlar: formData.get('notlar').trim()
+        };
+        if (!entry.adSoyad) {
+          alert('Ad soyad zorunludur.');
+          return;
+        }
+        if (isEdit) {
+          state.contacts = state.contacts.map(contact => contact.id === entry.id ? entry : contact);
+        } else {
+          state.contacts.push(entry);
+        }
+        saveState();
+        renderAll();
+        showToast('Kişi kaydedildi.');
+        showEpcDetail(epcId);
+      });
+
+      openPanel(isEdit ? 'Kişi Düzenle' : 'Yeni Kişi', 'EPC kişisi', form);
+    }
+
+    function showOpportunityDetail(id) {
+      const opp = findById(state.opportunities, id);
+      if (!opp) return;
+      const epc = findById(state.epcAccounts, opp.epcId);
+      const content = document.createElement('div');
+      content.innerHTML = `
+        <div class="card">
+          <div><strong>Proje:</strong> ${opp.projeAdi}</div>
+          <div><strong>EPC:</strong> ${epc ? epc.firmaAdi : '-'}</div>
+          <div><strong>Aşama:</strong> ${opp.asama}</div>
+          <div><strong>Tahmini Panel:</strong> ${opp.tahminiPanelAdedi}</div>
+          <div><strong>Notlar:</strong> ${opp.notlar || '-'}</div>
+        </div>
+      `;
+      openPanel('Fırsat Detay', opp.projeAdi, content);
+    }
+
+    function showOfferDetail(id) {
+      const offer = findById(state.offers, id);
+      if (!offer) return;
+      const opp = findById(state.opportunities, offer.opportunityId);
+      const content = document.createElement('div');
+      content.innerHTML = `
+        <div class="card">
+          <div><strong>Teklif No:</strong> ${offer.teklifNo || '-'}</div>
+          <div><strong>Fırsat:</strong> ${opp ? opp.projeAdi : '-'}</div>
+          <div><strong>Panel Adedi:</strong> ${offer.panelAdedi}</div>
+          <div><strong>Durum:</strong> ${offer.durum}</div>
+          <div><strong>Toplam:</strong> ${offer.toplamUsd} ${offer.paraBirimi}</div>
+        </div>
+      `;
+      openPanel('Teklif Detay', offer.teklifNo || 'Teklif', content);
+    }
+
+    function showPartnerDetail(id) {
+      const partner = findById(state.partners, id);
+      if (!partner) return;
+      const content = document.createElement('div');
+      content.innerHTML = `
+        <div class="card">
+          <div><strong>Firma:</strong> ${partner.firmaAdi}</div>
+          <div><strong>Yetkili:</strong> ${partner.yetkili || '-'}</div>
+          <div><strong>Şehir:</strong> ${partner.sehir || '-'}</div>
+          <div><strong>Aylık Hedef:</strong> ${partner.aylikHedefPanel}</div>
+          <div><strong>Durum:</strong> ${partner.durum}</div>
+        </div>
+      `;
+      openPanel('Partner Detay', partner.firmaAdi, content);
+    }
+
+    function showLeadDetail(id) {
+      const lead = findById(state.leads, id);
+      if (!lead) return;
+      const content = document.createElement('div');
+      content.innerHTML = `
+        <div class="card">
+          <div><strong>Lead:</strong> ${lead.adSoyadOrFirma}</div>
+          <div><strong>Kaynak:</strong> ${lead.kaynak}</div>
+          <div><strong>Aşama:</strong> ${lead.asama}</div>
+          <div><strong>Notlar:</strong> ${lead.notlar || '-'}</div>
+        </div>
+      `;
+      openPanel('Lead Detay', lead.adSoyadOrFirma, content);
+    }
+
+    function formatDate(date) {
+      if (!date) return '-';
+      const d = new Date(date);
+      return d.toLocaleDateString('tr-TR');
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'alb-enerji-crm.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('Veri dışa aktarıldı.');
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(reader.result);
+          if (!imported || typeof imported !== 'object') throw new Error('Geçersiz');
+          state = { ...defaultData(), ...imported, version: SCHEMA_VERSION };
+          saveState();
+          renderAll();
+          showToast('Veri içe aktarıldı.');
+        } catch (error) {
+          alert('Dosya okunamadı.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetData() {
+      if (!confirm('Tüm veriyi silmek istediğinize emin misiniz?')) return;
+      state = defaultData();
+      saveState();
+      renderAll();
+      showToast('Veri sıfırlandı.');
+    }
+
+    function loadDemoData() {
+      state = defaultData();
+      state.epcAccounts = [
+        {
+          id: uuid(),
+          firmaAdi: 'Solix Enerji',
+          sehir: 'İstanbul',
+          segment: 'industrial',
+          kapasiteTahminiPanellerAy: 1200,
+          notlar: 'Yıllık sözleşme potansiyeli.',
+          durum: 'aktif',
+          funnelStage: 'Uygun',
+          tahminiPanel: 3500,
+          olasilik: 25,
+          olusturmaTarihi: new Date().toISOString(),
+          sonTemasTarihi: '',
+          sonrakiAksiyon: '',
+          etiketler: ['stratejik', 'yüksek hacim']
+        },
+        {
+          id: uuid(),
+          firmaAdi: 'Nova EPC',
+          sehir: 'Ankara',
+          segment: 'rooftop',
+          kapasiteTahminiPanellerAy: 600,
+          notlar: 'KOBİ odaklı.',
+          durum: 'hedef',
+          funnelStage: 'İlk Temas',
+          tahminiPanel: 1800,
+          olasilik: 15,
+          olusturmaTarihi: new Date().toISOString(),
+          sonTemasTarihi: '',
+          sonrakiAksiyon: '',
+          etiketler: ['kobi']
+        }
+      ];
+      state.opportunities = [
+        {
+          id: uuid(),
+          epcId: state.epcAccounts[0].id,
+          projeAdi: 'Güneşkent OSB',
+          il: 'Kocaeli',
+          gucKw: 1200,
+          tahminiPanelAdedi: 3200,
+          asama: 'teklif_verildi',
+          kapanisTarihiTahmini: '',
+          olasilik: 40,
+          notlar: 'Finansman görüşmesi bekleniyor.'
+        }
+      ];
+      state.offers = [
+        {
+          id: uuid(),
+          opportunityId: state.opportunities[0].id,
+          teklifNo: 'ALB-2024-001',
+          panelModeli: 'AE-550',
+          panelAdedi: 3200,
+          birimFiyatUsd: 120,
+          toplamUsd: 384000,
+          kdvOrani: 20,
+          paraBirimi: 'USD',
+          teslimSekli: 'DAP',
+          terminNotu: '45 gün',
+          durum: 'gonderildi',
+          olusturmaTarihi: new Date().toISOString()
+        }
+      ];
+      state.partners = [
+        {
+          id: uuid(),
+          firmaAdi: 'Delta Distribütör',
+          yetkili: 'Ayşe Demir',
+          sehir: 'İzmir',
+          yillikHedefPanel: 12000,
+          aylikHedefPanel: 1000,
+          ocak: 800,
+          subat: 900,
+          mart: 1100,
+          nisan: 950,
+          mayis: 0,
+          haziran: 0,
+          temmuz: 0,
+          agustos: 0,
+          eylul: 0,
+          ekim: 0,
+          kasim: 0,
+          aralik: 0,
+          notlar: 'Batı bölgesi.',
+          durum: 'aktif'
+        }
+      ];
+      state.leads = [
+        {
+          id: uuid(),
+          kaynak: 'fuar',
+          adSoyadOrFirma: 'Solaris Mühendislik',
+          tip: 'epc_adayi',
+          il: 'Bursa',
+          notlar: 'Fuar sonrası ilk arama yapılacak.',
+          asama: 'yeni',
+          olusturmaTarihi: new Date().toISOString(),
+          sonTemasTarihi: '',
+          sonrakiAksiyon: ''
+        }
+      ];
+      saveState();
+      renderAll();
+      showToast('Demo veri yüklendi.');
+    }
+
+    function calculatePartnerProgress() {
+      const monthIndex = new Date().getMonth();
+      const monthKeys = ['ocak', 'subat', 'mart', 'nisan', 'mayis', 'haziran', 'temmuz', 'agustos', 'eylul', 'ekim', 'kasim', 'aralik'];
+      const key = monthKeys[monthIndex];
+      const totals = state.partners.reduce((sum, partner) => sum + Number(partner[key] || 0), 0);
+      const targets = state.partners.reduce((sum, partner) => sum + Number(partner.aylikHedefPanel || 0), 0);
+      if (!targets) return 0;
+      return Math.round((totals / targets) * 100);
+    }
+
+    renderAll();
+    showSchemaBanner();
+  </script>
+</body>
+</html>
