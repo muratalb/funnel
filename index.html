@@ -360,7 +360,8 @@
         <div class="grid grid-3">
           <div class="card">
             <div class="muted">Bu Ay Satılan Panel</div>
-            <h2 id="kpi-panels">0</h2>
+            <h2 id="kpi-panels">Toplam: 0</h2>
+            <div class="muted" id="kpi-panels-breakdown">Tekliflerden: 0 • Manuel: 0</div>
           </div>
           <div class="card">
             <div class="muted">Bu Ay Yeni EPC</div>
@@ -544,6 +545,10 @@
               <input type="file" id="import-file" accept="application/json" hidden>
             </div>
             <div class="form-group">
+              <label>Manuel Satış (Bu Ay)</label>
+              <input class="input" id="manual-sales" type="number" min="0" placeholder="Örn: 1200">
+            </div>
+            <div class="form-group">
               <button class="btn ghost" id="demo-btn">Demo Data Yükle</button>
             </div>
             <div class="form-group">
@@ -577,7 +582,7 @@
 
   <script>
     const STORAGE_KEY = 'albCRM_v1';
-    const SCHEMA_VERSION = 1;
+    const SCHEMA_VERSION = 2;
     const funnelStages = [
       { label: 'Hedef Listede', probability: 10 },
       { label: 'İlk Temas', probability: 15 },
@@ -590,6 +595,7 @@
     const defaultData = () => ({
       version: SCHEMA_VERSION,
       monthlyTarget: 800,
+      manualMonthlySales: 0,
       epcAccounts: [],
       contacts: [],
       leads: [],
@@ -599,6 +605,9 @@
     });
 
     let state = loadState();
+    let funnelScopeIds = [];
+    let funnelScopeActive = false;
+    migrateState();
 
     const navButtons = document.querySelectorAll('.nav button');
     const pages = document.querySelectorAll('.page');
@@ -612,6 +621,11 @@
     document.getElementById('panel-close').addEventListener('click', closePanel);
 
     document.addEventListener('keydown', (event) => {
+      const isTypingTarget = event.target && (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT' || event.target.isContentEditable);
+      const hasModifier = event.ctrlKey || event.metaKey || event.altKey;
+      if ((isTypingTarget || hasModifier) && event.key !== 'Escape') {
+        return;
+      }
       if (event.key === 'n' || event.key === 'N') {
         event.preventDefault();
         handleNewShortcut();
@@ -640,7 +654,13 @@
     document.getElementById('monthly-target').addEventListener('input', (event) => {
       state.monthlyTarget = Math.max(0, Number(event.target.value));
       saveState();
-      renderFunnel();
+      updatePipelineSummary();
+    });
+
+    document.getElementById('manual-sales').addEventListener('input', (event) => {
+      state.manualMonthlySales = Math.max(0, Number(event.target.value));
+      saveState();
+      renderDashboard();
     });
 
     const searchInputs = {
@@ -676,6 +696,17 @@
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function migrateState() {
+      if (!state || typeof state !== 'object') {
+        state = defaultData();
+      }
+      if (!state.version || state.version < 2) {
+        state.manualMonthlySales = state.manualMonthlySales || 0;
+        state.version = 2;
+        saveState();
+      }
     }
 
     function showToast(message) {
@@ -732,6 +763,7 @@
       renderOpportunities();
       renderOffers();
       renderPartners();
+      renderSettings();
     }
 
     function filterSearch(items, query, fields) {
@@ -753,7 +785,10 @@
       const lostOffers = offersThisMonth.filter(o => o.durum === 'red');
 
       const panelsSold = acceptedOffers.reduce((sum, offer) => sum + Number(offer.panelAdedi || 0), 0);
-      document.getElementById('kpi-panels').textContent = panelsSold.toLocaleString('tr-TR');
+      const manualSales = Number(state.manualMonthlySales || 0);
+      const totalSales = Math.max(panelsSold, manualSales);
+      document.getElementById('kpi-panels').textContent = `Toplam: ${totalSales.toLocaleString('tr-TR')}`;
+      document.getElementById('kpi-panels-breakdown').textContent = `Tekliflerden: ${panelsSold.toLocaleString('tr-TR')} • Manuel: ${manualSales.toLocaleString('tr-TR')}`;
 
       const newEpcs = state.epcAccounts.filter(epc => {
         const date = epc.olusturmaTarihi ? new Date(epc.olusturmaTarihi) : null;
@@ -788,8 +823,9 @@
 
       const upcoming = state.epcAccounts.filter(epc => epc.sonrakiAksiyon)
         .filter(epc => {
-          const date = new Date(epc.sonrakiAksiyon);
-          const diff = (date - now) / (1000 * 60 * 60 * 24);
+          const date = parseDateOnly(epc.sonrakiAksiyon);
+          if (!date) return false;
+          const diff = (date - startOfDay(now)) / (1000 * 60 * 60 * 24);
           return diff >= 0 && diff <= 7;
         });
 
@@ -866,6 +902,9 @@
       if (filters.tag) epcs = epcs.filter(epc => (epc.etiketler || []).includes(filters.tag));
       if (filters.stage) epcs = epcs.filter(epc => epc.funnelStage === filters.stage);
 
+      const targetInput = document.getElementById('monthly-target');
+      targetInput.value = state.monthlyTarget || 0;
+
       const funnelCards = document.getElementById('funnel-cards');
       funnelCards.innerHTML = '';
       funnelStages.forEach(stage => {
@@ -879,12 +918,9 @@
         funnelCards.appendChild(card);
       });
 
-      const pipelineTotal = epcs.reduce((sum, epc) => sum + weightedPipeline(epc), 0);
-      document.getElementById('pipeline-total').textContent = Math.round(pipelineTotal).toLocaleString('tr-TR');
-      const targetInput = document.getElementById('monthly-target');
-      targetInput.value = state.monthlyTarget || 0;
-      const ratio = state.monthlyTarget ? (pipelineTotal / state.monthlyTarget).toFixed(1) : 0;
-      document.getElementById('pipeline-ratio').textContent = `${ratio}x`;
+      funnelScopeIds = epcs.map(epc => epc.id);
+      funnelScopeActive = true;
+      updatePipelineSummary();
 
       const tbody = document.getElementById('pipeline-table');
       tbody.innerHTML = '';
@@ -899,9 +935,9 @@
           </td>
           <td><input class="input" type="number" min="0" data-action="panel" data-id="${epc.id}" value="${epc.tahminiPanel || 0}"></td>
           <td><input class="input" type="number" min="0" max="100" data-action="prob" data-id="${epc.id}" value="${epc.olasilik || 0}"></td>
-          <td>${Math.round(weightedPipeline(epc))}</td>
+          <td data-weighted="${epc.id}">${Math.round(weightedPipeline(epc))}</td>
           <td><input class="input" type="date" data-action="last" data-id="${epc.id}" value="${epc.sonTemasTarihi || ''}"></td>
-          <td><input class="input" type="text" data-action="next" data-id="${epc.id}" value="${epc.sonrakiAksiyon || ''}" placeholder="YYYY-AA-GG"></td>
+          <td><input class="input" type="date" data-action="next" data-id="${epc.id}" value="${epc.sonrakiAksiyon || ''}"></td>
         `;
         tbody.appendChild(row);
       });
@@ -912,8 +948,13 @@
           const stage = funnelStages.find(s => s.label === select.value);
           epc.funnelStage = select.value;
           epc.olasilik = stage ? stage.probability : epc.olasilik;
+          const row = select.closest('tr');
+          const probInput = row ? row.querySelector('input[data-action="prob"]') : null;
+          if (probInput) {
+            probInput.value = epc.olasilik;
+          }
           saveState();
-          renderAll();
+          updatePipelineRow(epc.id);
         });
       });
 
@@ -926,7 +967,7 @@
           if (input.dataset.action === 'last') epc.sonTemasTarihi = input.value;
           if (input.dataset.action === 'next') epc.sonrakiAksiyon = input.value;
           saveState();
-          renderAll();
+          updatePipelineRow(epc.id);
         });
       });
     }
@@ -1051,6 +1092,14 @@
       list.querySelectorAll('[data-action="partner-delete"]').forEach(btn => btn.addEventListener('click', () => deleteItem('partners', btn.dataset.id)));
     }
 
+    function renderSettings() {
+      const manualInput = document.getElementById('manual-sales');
+      if (manualInput) {
+        manualInput.value = state.manualMonthlySales || 0;
+      }
+      showSchemaBanner();
+    }
+
     function showSchemaBanner() {
       const banner = document.getElementById('schema-banner');
       banner.innerHTML = '';
@@ -1069,6 +1118,48 @@
 
     function weightedPipeline(epc) {
       return (Number(epc.tahminiPanel || 0) * Number(epc.olasilik || 0)) / 100;
+    }
+
+    function updatePipelineSummary() {
+      const epcs = funnelScopeActive ? state.epcAccounts.filter(epc => funnelScopeIds.includes(epc.id)) : state.epcAccounts;
+      const pipelineTotal = epcs.reduce((sum, epc) => sum + weightedPipeline(epc), 0);
+      document.getElementById('pipeline-total').textContent = Math.round(pipelineTotal).toLocaleString('tr-TR');
+      const ratio = state.monthlyTarget ? (pipelineTotal / state.monthlyTarget).toFixed(1) : 0;
+      document.getElementById('pipeline-ratio').textContent = `${ratio}x`;
+      updateTopEpcList();
+    }
+
+    function updatePipelineRow(epcId) {
+      const epc = findById(state.epcAccounts, epcId);
+      const weightedCell = document.querySelector(`[data-weighted="${epcId}"]`);
+      if (epc && weightedCell) {
+        weightedCell.textContent = Math.round(weightedPipeline(epc));
+      }
+      updatePipelineSummary();
+    }
+
+    function updateTopEpcList() {
+      const topEpc = [...state.epcAccounts]
+        .map(epc => ({
+          ...epc,
+          weighted: (Number(epc.tahminiPanel || 0) * Number(epc.olasilik || 0)) / 100
+        }))
+        .sort((a, b) => b.weighted - a.weighted)
+        .slice(0, 5);
+
+      const topEpcList = document.getElementById('kpi-top-epc');
+      if (!topEpcList) return;
+      topEpcList.innerHTML = '';
+      if (!topEpc.length) {
+        topEpcList.innerHTML = '<div class="muted">Henüz kayıt yok.</div>';
+      } else {
+        topEpc.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'list-item';
+          div.textContent = `${item.firmaAdi} • ${Math.round(item.weighted)} panel`;
+          topEpcList.appendChild(div);
+        });
+      }
     }
 
     function findById(list, id) {
@@ -1421,7 +1512,10 @@
         </div>
         <div class="form-group">
           <label>Toplam (USD)</label>
-          <input class="input" type="number" min="0" name="toplamUsd" value="${data?.toplamUsd || 0}">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="input" type="number" min="0" name="toplamUsd" value="${data?.toplamUsd || 0}">
+            <button type="button" class="btn" id="recalc-total">Hesapla</button>
+          </div>
         </div>
         <div class="form-group">
           <label>KDV Oranı</label>
@@ -1455,6 +1549,32 @@
 
       const inlineBtn = form.querySelector('#inline-opp');
       const inlineForm = form.querySelector('#inline-opp-form');
+      const panelInput = form.querySelector('input[name="panelAdedi"]');
+      const priceInput = form.querySelector('input[name="birimFiyatUsd"]');
+      const totalInput = form.querySelector('input[name="toplamUsd"]');
+      const recalcBtn = form.querySelector('#recalc-total');
+      let autoTotal = true;
+
+      const updateTotal = () => {
+        if (!autoTotal) return;
+        const panelCount = Math.max(0, Number(panelInput.value || 0));
+        const unitPrice = Math.max(0, Number(priceInput.value || 0));
+        totalInput.value = Math.round(panelCount * unitPrice * 100) / 100;
+      };
+
+      panelInput.addEventListener('input', updateTotal);
+      priceInput.addEventListener('input', updateTotal);
+      totalInput.addEventListener('input', () => {
+        autoTotal = false;
+      });
+      recalcBtn.addEventListener('click', () => {
+        autoTotal = true;
+        updateTotal();
+      });
+      if (!data) {
+        updateTotal();
+      }
+
       inlineBtn.addEventListener('click', () => {
         inlineForm.style.display = inlineForm.style.display === 'none' ? 'block' : 'none';
       });
@@ -1794,9 +1914,25 @@
       openPanel('Lead Detay', lead.adSoyadOrFirma, content);
     }
 
+    function startOfDay(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function parseDateOnly(value) {
+      if (!value) return null;
+      const parts = value.split('-').map(Number);
+      if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+      const [year, month, day] = parts;
+      const date = new Date(year, month - 1, day);
+      if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+        return null;
+      }
+      return date;
+    }
+
     function formatDate(date) {
-      if (!date) return '-';
-      const d = new Date(date);
+      const d = typeof date === 'string' ? parseDateOnly(date) : date;
+      if (!d || Number.isNaN(d.getTime())) return '-';
       return d.toLocaleDateString('tr-TR');
     }
 
@@ -1961,7 +2097,6 @@
     }
 
     renderAll();
-    showSchemaBanner();
   </script>
 </body>
 </html>
