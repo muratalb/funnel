@@ -5,79 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mini CRM Pro</title>
   <style>
-    :root {
-      --bg: #f5f5f7;
-      --card: #fff;
-      --text: #1d1d1f;
-      --muted: #6e6e73;
-      --line: #d2d2d7;
-      --accent: #0071e3;
-      --accent-soft: #e8f2ff;
-      --danger: #d70015;
-      --ok: #177245;
-      --radius: 14px;
-      --shadow: 0 8px 24px rgba(0,0,0,.06);
-    }
-    body.dark {
-      --bg: #111315;
-      --card: #1b1d21;
-      --text: #f5f5f7;
-      --muted: #b3b3bc;
-      --line: #32343a;
-      --accent-soft: #16253a;
-      --shadow: 0 8px 24px rgba(0,0,0,.35);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif}
-    .container{max-width:1440px;margin:0 auto;padding:20px}
-    .topbar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-    h1,h2,h3{margin:.2rem 0;letter-spacing:-.02em}
-    .tabs{display:flex;flex-wrap:wrap;gap:8px}
+    :root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#6e6e73;--line:#d2d2d7;--accent:#0071e3;--soft:#e8f2ff;--danger:#d70015;--radius:14px;--shadow:0 8px 24px rgba(0,0,0,.06)}
+    body.dark{--bg:#111315;--card:#1b1d21;--text:#f5f5f7;--muted:#b3b3bc;--line:#32343a;--soft:#16253a;--shadow:0 8px 24px rgba(0,0,0,.35)}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,Arial,sans-serif}
+    .container{max-width:1460px;margin:0 auto;padding:18px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    h1,h2,h3{margin:.2rem 0;letter-spacing:-.02em}.tabs,.actions{display:flex;gap:8px;flex-wrap:wrap}
     .tab-btn,.btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:8px 13px;cursor:pointer;font-weight:600}
-    .tab-btn.active{background:var(--accent-soft);border-color:#a9cdf8;color:var(--accent)}
-    .btn{border-radius:10px}
-    .btn.primary{background:var(--accent);color:#fff;border-color:#0063c8}
-    .btn.ghost{background:transparent}
-    .btn.danger{background:var(--danger);color:#fff;border-color:#b00012}
-    .btn.small{padding:5px 8px;font-size:.8rem}
-    .btn.sel{outline:2px solid var(--accent)}
-    .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
-    .col-12{grid-column:span 12}.col-9{grid-column:span 9}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
-    @media(max-width:1080px){.col-9,.col-8,.col-6,.col-4,.col-3{grid-column:span 12}}
+    .tab-btn.active{background:var(--soft);color:var(--accent)} .btn{border-radius:10px}.btn.primary{background:var(--accent);border-color:#0063c8;color:#fff}.btn.danger{background:var(--danger);border-color:#b80012;color:#fff}
+    .btn.small{padding:5px 8px;font-size:.8rem}.btn.sel{outline:2px solid var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.col-12{grid-column:span 12}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}.col-2{grid-column:span 2}
+    @media(max-width:1080px){.col-8,.col-6,.col-4,.col-3,.col-2{grid-column:span 12}}
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
-    input,select,textarea{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit}
-    textarea{min-height:80px;resize:vertical}
-    label{font-size:.82rem;color:var(--muted);display:block;margin-bottom:5px}
-    .hint{font-size:.78rem;color:var(--muted)}
-    table{width:100%;border-collapse:collapse;font-size:.9rem}
-    th,td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    th{font-size:.8rem;color:var(--muted)}
-    .actions{display:flex;flex-wrap:wrap;gap:8px}
-    .hidden{display:none!important}
-    .stat{border:1px solid var(--line);border-radius:10px;padding:11px;background:var(--card)}
-    .stat .l{font-size:.78rem;color:var(--muted)}
-    .stat .v{font-size:1.25rem;font-weight:700}
-    .pill{font-size:.76rem;border:1px solid var(--line);border-radius:999px;padding:2px 8px;display:inline-block}
-    .kanban{display:grid;grid-template-columns:repeat(7,minmax(210px,1fr));gap:10px;overflow:auto;padding-bottom:6px}
-    .kcol{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:8px;min-height:220px}
-    .kcard{border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:8px;background:var(--bg);cursor:grab}
-    .kdrop{background:rgba(0,113,227,.08)}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.27);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}
-    .modal{width:min(1250px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
-    .conflict-row{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
-    .field-pick{display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:8px;align-items:center;margin-bottom:6px}
+    label{display:block;margin-bottom:5px;color:var(--muted);font-size:.82rem} input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit}
+    textarea{min-height:76px;resize:vertical}.hint{font-size:.78rem;color:var(--muted)}
+    table{width:100%;border-collapse:collapse;font-size:.9rem} th,td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} th{font-size:.8rem;color:var(--muted)}
+    .hidden{display:none!important}.pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-size:.76rem}
+    .stat{border:1px solid var(--line);border-radius:10px;padding:10px}.stat .l{font-size:.78rem;color:var(--muted)}.stat .v{font-weight:700;font-size:1.2rem}
+    .kanban{display:grid;grid-template-columns:repeat(7,minmax(210px,1fr));gap:10px;overflow:auto}.kcol{border:1px solid var(--line);border-radius:12px;padding:8px;min-height:220px;background:var(--card)}.kcard{border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:8px;background:var(--bg);cursor:grab}.kdrop{background:rgba(0,113,227,.08)}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.27);display:flex;align-items:center;justify-content:center;padding:16px;z-index:40}.modal{width:min(1250px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+    .conflict-row{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}.field-pick{display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:8px;align-items:center;margin-bottom:6px}
     @media(max-width:900px){.field-pick{grid-template-columns:1fr}}
-    .remind{border:1px solid #ffc67b;background:#fff5e8;color:#7a4400;padding:8px;border-radius:10px;margin-bottom:8px}
-    body.dark .remind{background:#332415;border-color:#6a4a23;color:#ffcf96}
+    .remind{border:1px solid #ffc67b;background:#fff5e8;color:#7a4400;padding:8px;border-radius:10px;margin-bottom:8px} body.dark .remind{background:#332415;border-color:#6a4a23;color:#ffcf96}
   </style>
 </head>
 <body>
 <div class="container">
   <div class="topbar">
     <h1>Mini CRM Pro</h1>
-    <div class="actions">
-      <button class="btn" id="themeToggle">🌙 Dark Mode</button>
-    </div>
+    <div class="actions"><button class="btn" id="themeToggle">🌙 Dark Mode</button></div>
     <div class="tabs">
       <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
       <button class="tab-btn" data-tab="satis">Satış Durumu</button>
@@ -90,445 +45,190 @@
     </div>
   </div>
 
-  <section id="tab-dashboard"><div id="reminderBox"></div><div class="grid" id="dash"></div></section>
+  <section id="tab-dashboard"><div id="reminderBox"></div><div id="dash" class="grid"></div></section>
   <section id="tab-satis" class="hidden"><div class="card"><h3>Satış Hunisi ve Performans</h3><div id="salesGrid" class="grid"></div></div></section>
 
   <section id="tab-epc" class="hidden">
-    <div class="card">
-      <h3 id="epcTitle">EPC Ekle</h3>
+    <div class="card"><h3 id="epcTitle">EPC Ekle</h3>
       <form id="epcForm" class="grid">
-        <input type="hidden" id="epcEditKey" />
-        <input type="hidden" id="epcAction" value="update" />
-        <div class="col-4"><label>Firma Adı *</label><input id="epcFirmaAdi" required/></div>
-        <div class="col-4"><label>Şehir *</label><input id="epcSehir" required/></div>
-        <div class="col-4"><label>Yetkili Kişi</label><input id="epcYetkiliKisi"/></div>
-        <div class="col-3"><label>Telefon</label><input id="epcTelefon"/></div>
-        <div class="col-3"><label>Email</label><input id="epcEmail" type="email"/></div>
-        <div class="col-3"><label>Owner</label><input id="epcOwner"/><div class="hint">Owner = kaydın sahibi/hesap verebilir kişi. Sorumludan farklı olabilir.</div></div>
-        <div class="col-3"><label>updated_at</label><input id="epcUpdatedAt" disabled/></div>
+        <input type="hidden" id="epcEditKey"><input type="hidden" id="epcAction" value="update">
+        <div class="col-4"><label>Firma Adı *</label><input id="epcFirmaAdi" required></div>
+        <div class="col-4"><label>Şehir *</label><input id="epcSehir" required></div>
+        <div class="col-4"><label>Yetkili Kişi</label><input id="epcYetkili"></div>
+        <div class="col-3"><label>Telefon</label><input id="epcTelefon"></div>
+        <div class="col-3"><label>Email</label><input id="epcEmail" type="email"></div>
+        <div class="col-3"><label>Owner</label><input id="epcOwner"><div class="hint">Owner = kaydın sahibi/hesap verebilir kişi. Sorumludan farklı olabilir.</div></div>
+        <div class="col-3"><label>updated_at</label><input id="epcUpdatedAt" disabled></div>
         <div class="col-12"><label>Notlar</label><textarea id="epcNotlar"></textarea></div>
-        <div class="col-12 actions">
-          <button class="btn primary" type="submit" data-action="update">Kaydet/Güncelle</button>
-          <button class="btn" type="submit" data-action="new">Yeni Olarak Kaydet</button>
-          <button class="btn" type="button" id="epcReset">Temizle</button>
-        </div>
+        <div class="col-12 actions"><button class="btn primary" type="submit" data-action="update">Kaydet/Güncelle</button><button class="btn" type="submit" data-action="new">Yeni Olarak Kaydet</button><button class="btn" type="button" id="epcReset">Temizle</button></div>
       </form>
     </div>
     <div class="card"><h3>EPC Listesi</h3><table id="epcTable"><thead><tr><th>Firma</th><th>Şehir</th><th>Yetkili</th><th>Owner</th><th>updated_at</th><th>İşlem</th></tr></thead><tbody></tbody></table></div>
   </section>
 
   <section id="tab-projeler" class="hidden">
-    <div class="card">
-      <h3 id="projTitle">Proje Ekle</h3>
+    <div class="card"><h3 id="projTitle">Proje Ekle</h3>
       <form id="projectForm" class="grid">
-        <input type="hidden" id="projectEditKey" />
-        <input type="hidden" id="projectAction" value="update" />
+        <input type="hidden" id="projectEditKey"><input type="hidden" id="projectAction" value="update">
         <div class="col-6"><label>Bağlı EPC *</label><select id="projEpcKey" required></select></div>
-        <div class="col-6"><label>Proje Adı *</label><input id="projAdi" required/><div class="hint">Müşteri/Proje – İlçe/Şehir – xxx kW – Tip</div></div>
-        <div class="col-3"><label>Proje Türü</label><input id="projTuru"/></div>
-        <div class="col-3"><label>Güç (kW) *</label><input id="projGucKw" type="number" min="0" step="0.01" required/></div>
-        <div class="col-3"><label>Panel Gücü (W)</label><input id="projPanelW" type="number" min="1" value="595"/></div>
+        <div class="col-6"><label>Proje Adı *</label><input id="projAdi" required><div class="hint">Müşteri/Proje – İlçe/Şehir – xxx kW – Tip</div></div>
+        <div class="col-3"><label>Proje Türü</label><input id="projTuru"></div>
+        <div class="col-3"><label>Güç (kW) *</label><input id="projGuc" type="number" min="0" step="0.01" required></div>
+        <div class="col-3"><label>Panel Gücü (W)</label><input id="projPanel" type="number" min="1" value="595"></div>
         <div class="col-3"><label>Aşama</label><select id="projAsama"></select></div>
-        <div class="col-3"><label>Olasılık (%)</label><input id="projOlasilik" type="number" min="0" max="100"/></div>
-        <div class="col-3"><label><input type="checkbox" id="autoProb" checked/> Aşamaya göre otomatik</label></div>
-        <div class="col-3"><label>Tahmini Başlama Ayı *</label><input id="projAy" type="month" required/></div>
-        <div class="col-3"><label>Son Temas</label><input id="projTemas" type="date"/></div>
+        <div class="col-3"><label>Olasılık (%)</label><input id="projOlasilik" type="number" min="0" max="100"></div>
+        <div class="col-3"><label><input type="checkbox" id="autoProb" checked> Aşamaya göre otomatik</label></div>
+        <div class="col-3"><label>Tahmini Başlama Ayı *</label><input id="projAy" type="month" required></div>
+        <div class="col-3"><label>Son Temas</label><input id="projTemas" type="date"></div>
         <div class="col-3"><label>Sorumlu</label><select id="projSorumlu"><option value="">Seçiniz</option><option>Murat</option><option>Hüseyin</option><option>Buse</option></select></div>
-        <div class="col-3"><label>Owner</label><input id="projOwner"/><div class="hint">Owner = kayıt sahibi; Sorumlu = operasyonu yürüten kişi.</div></div>
-        <div class="col-3"><label>Etiketler (virgülle)</label><input id="projTags" placeholder="rooftop,c&i"/></div>
+        <div class="col-3"><label>Owner</label><input id="projOwner"><div class="hint">Owner = kayıt sahibi; Sorumlu = operasyonu yürüten kişi.</div></div>
+        <div class="col-3"><label>Etiketler (virgülle)</label><input id="projEtiket"></div>
         <div class="col-6"><label>Bir Sonraki Aksiyon</label><textarea id="projAksiyon"></textarea></div>
         <div class="col-6"><label>Notlar</label><textarea id="projNotlar"></textarea></div>
-        <div class="col-12 actions">
-          <button class="btn primary" type="submit" data-action="update">Kaydet/Güncelle</button>
-          <button class="btn" type="submit" data-action="new">Yeni Olarak Kaydet</button>
-          <button class="btn" type="button" id="projReset">Temizle</button>
-        </div>
+        <div class="col-12 actions"><button class="btn primary" type="submit" data-action="update">Kaydet/Güncelle</button><button class="btn" type="submit" data-action="new">Yeni Olarak Kaydet</button><button class="btn" type="button" id="projReset">Temizle</button></div>
       </form>
     </div>
-
-    <div class="card">
-      <h3>Tablo + Arama/Filtre + Toplu İşlem</h3>
+    <div class="card"><h3>Tablo + Filtre + Toplu İşlem</h3>
       <div class="grid">
-        <div class="col-4"><label>Arama</label><input id="fltSearch" placeholder="proje, epc, not..."/></div>
+        <div class="col-4"><label>Arama</label><input id="fltSearch"></div>
         <div class="col-2"><label>Aşama</label><select id="fltStage"><option value="">Tümü</option></select></div>
         <div class="col-2"><label>Sorumlu</label><select id="fltResp"><option value="">Tümü</option><option>Murat</option><option>Hüseyin</option><option>Buse</option></select></div>
-        <div class="col-2"><label>Etiket</label><input id="fltTag" placeholder="etiket"/></div>
+        <div class="col-2"><label>Etiket</label><input id="fltTag"></div>
         <div class="col-2 actions" style="align-items:end"><button class="btn" id="fltClear">Temizle</button></div>
       </div>
-      <div class="actions" style="margin:8px 0;">
-        <button class="btn" id="bulkSelectAll">Tümünü Seç</button>
-        <button class="btn" id="bulkClear">Seçimi Kaldır</button>
-        <select id="bulkStage"><option value="">Aşamaya taşı...</option></select>
-        <button class="btn" id="bulkApplyStage">Seçilileri taşı</button>
-        <button class="btn danger" id="bulkDelete">Seçilileri sil</button>
-      </div>
-      <table id="projectTable"><thead><tr><th><input type="checkbox" id="chkAll"/></th><th>Proje</th><th>EPC</th><th>Aşama</th><th>kW</th><th>Panel</th><th>Ağırlıklı</th><th>Ay</th><th>Sorumlu</th><th>Etiket</th><th>İşlem</th></tr></thead><tbody></tbody></table>
+      <div class="actions" style="margin:8px 0"><button class="btn" id="bulkSelectAll">Tümünü Seç</button><button class="btn" id="bulkClear">Seçimi Kaldır</button><select id="bulkStage"></select><button class="btn" id="bulkApply">Seçilileri taşı</button><button class="btn danger" id="bulkDelete">Seçilileri sil</button></div>
+      <table id="projectTable"><thead><tr><th><input type="checkbox" id="chkAll"></th><th>Proje</th><th>EPC</th><th>Aşama</th><th>kW</th><th>Panel</th><th>Ağırlıklı</th><th>Ay</th><th>Sorumlu</th><th>Etiket</th><th>İşlem</th></tr></thead><tbody></tbody></table>
     </div>
   </section>
 
-  <section id="tab-kanban" class="hidden"><div class="card"><h3>Kanban Görünüm</h3><div class="kanban" id="kanban"></div></div></section>
+  <section id="tab-kanban" class="hidden"><div class="card"><h3>Kanban</h3><div id="kanban" class="kanban"></div></div></section>
+  <section id="tab-aktivite" class="hidden"><div class="card"><h3>Aktivite/Zaman Çizelgesi</h3><form id="activityForm" class="grid"><div class="col-4"><label>Proje</label><select id="actProje"></select></div><div class="col-3"><label>Tarih</label><input id="actDate" type="date" required></div><div class="col-3"><label>Tip</label><select id="actType"><option>Arama</option><option>Toplantı</option><option>Teklif</option><option>Not</option></select></div><div class="col-12"><label>Açıklama</label><textarea id="actText" required></textarea></div><div class="col-12"><button class="btn primary" type="submit">Aktivite Ekle</button></div></form></div><div class="card"><div id="activityList"></div></div></section>
+  <section id="tab-gorev" class="hidden"><div class="card"><h3>Görevler</h3><form id="taskForm" class="grid"><div class="col-4"><label>Proje</label><select id="taskProje"></select></div><div class="col-4"><label>Görev</label><input id="taskTitle" required></div><div class="col-2"><label>Termin</label><input id="taskDue" type="date" required></div><div class="col-2"><label>Öncelik</label><select id="taskPriority"><option>Düşük</option><option>Orta</option><option>Yüksek</option></select></div><div class="col-12"><button class="btn primary" type="submit">Görev Ekle</button></div></form></div><div class="card"><table id="taskTable"><thead><tr><th>Durum</th><th>Görev</th><th>Proje</th><th>Termin</th><th>Öncelik</th><th>İşlem</th></tr></thead><tbody></tbody></table></div></section>
 
-  <section id="tab-aktivite" class="hidden">
-    <div class="card">
-      <h3>Aktivite / Zaman Çizelgesi</h3>
-      <form id="activityForm" class="grid">
-        <div class="col-4"><label>Proje</label><select id="actProje"></select></div>
-        <div class="col-3"><label>Tarih</label><input id="actDate" type="date" required/></div>
-        <div class="col-3"><label>Tip</label><select id="actType"><option>Arama</option><option>Toplantı</option><option>Teklif</option><option>Not</option></select></div>
-        <div class="col-12"><label>Açıklama</label><textarea id="actText" required></textarea></div>
-        <div class="col-12"><button class="btn primary" type="submit">Aktivite Ekle</button></div>
-      </form>
-    </div>
-    <div class="card"><div id="activityList"></div></div>
-  </section>
-
-  <section id="tab-gorev" class="hidden">
-    <div class="card">
-      <h3>Görevler & Hatırlatmalar</h3>
-      <form id="taskForm" class="grid">
-        <div class="col-4"><label>Proje</label><select id="taskProje"></select></div>
-        <div class="col-4"><label>Görev</label><input id="taskTitle" required/></div>
-        <div class="col-2"><label>Termin</label><input id="taskDue" type="date" required/></div>
-        <div class="col-2"><label>Öncelik</label><select id="taskPriority"><option>Düşük</option><option>Orta</option><option>Yüksek</option></select></div>
-        <div class="col-12"><button class="btn primary" type="submit">Görev Ekle</button></div>
-      </form>
-    </div>
-    <div class="card"><table id="taskTable"><thead><tr><th>Durum</th><th>Görev</th><th>Proje</th><th>Termin</th><th>Öncelik</th><th>İşlem</th></tr></thead><tbody></tbody></table></div>
-  </section>
-
-  <section id="tab-veri" class="hidden">
-    <div class="card"><h3>CSV Dışa Aktar</h3><div class="actions"><button class="btn primary" id="expEpc">epc.csv</button><button class="btn primary" id="expProj">projeler.csv</button></div><div class="hint">Excel için UTF-8 BOM ile üretilir.</div></div>
-    <div class="card">
-      <h3>CSV İçe Aktar (Merge)</h3>
-      <div class="grid">
-        <div class="col-6"><label>epc.csv</label><input type="file" id="impEpc" accept=".csv"/></div>
-        <div class="col-6"><label>projeler.csv</label><input type="file" id="impProj" accept=".csv"/></div>
-        <div class="col-4"><label>Çakışma varsayılanı</label><select id="confDefault"><option value="ask">Her çakışmada bana sor</option><option value="existing">Bendeki kalsın</option><option value="incoming">Gelen kalsın</option><option value="newer">updated_at yeni olan</option></select></div>
-        <div class="col-12"><button class="btn" id="startImport">İçe Aktarmayı Başlat</button></div>
-      </div>
-    </div>
+  <section id="tab-veri" class="hidden"><div class="card"><h3>CSV Dışa Aktar</h3><div class="actions"><button class="btn primary" id="expEpc">epc.csv</button><button class="btn primary" id="expProj">projeler.csv</button></div><div class="hint">Excel için UTF-8 BOM ile üretilir.</div></div>
+    <div class="card"><h3>CSV İçe Aktar (Merge)</h3><div class="grid"><div class="col-6"><label>epc.csv</label><input id="impEpc" type="file" accept=".csv"></div><div class="col-6"><label>projeler.csv</label><input id="impProj" type="file" accept=".csv"></div><div class="col-4"><label>Çakışma varsayılanı</label><select id="confDefault"><option value="ask">Her çakışmada bana sor</option><option value="existing">Bendeki kalsın</option><option value="incoming">Gelen kalsın</option><option value="newer">updated_at yeni olan</option></select></div><div class="col-12"><button class="btn" id="startImport">İçe Aktarmayı Başlat</button></div></div></div>
     <div class="card hidden" id="importSummaryCard"><h3>Özet</h3><div id="importSummary"></div></div>
   </section>
 </div>
 
-<div id="confModal" class="modal-backdrop hidden"><div class="modal">
-  <h3>Çakışmalar</h3>
-  <div class="actions" style="justify-content:space-between"><div id="confCounter" class="hint"></div><div class="actions"><button class="btn" id="applySuggested">Varsayılan öneri (updated_at yeni)</button><button class="btn danger" id="confirmSuggested" disabled>Toplu Onay</button></div></div>
-  <div id="confList"></div>
-  <div class="actions"><button class="btn ghost" id="cancelConf">İptal</button><button class="btn primary" id="applyConf">Kararları Uygula</button></div>
-</div></div>
+<div id="confModal" class="modal-backdrop hidden"><div class="modal"><h3>Çakışmalar</h3><div class="actions" style="justify-content:space-between"><div id="confCounter" class="hint"></div><div class="actions"><button class="btn" id="applySuggested">Varsayılan öneri (updated_at yeni)</button><button class="btn danger" id="confirmSuggested" disabled>Toplu Onay</button></div></div><div id="confList"></div><div class="actions"><button class="btn" id="cancelConf">İptal</button><button class="btn primary" id="applyConf">Kararları Uygula</button></div></div></div>
 
 <script>
 (() => {
-  const STORAGE = 'mini_crm_v2';
-  const STAGES = {'İlk Temas':10,'Qualified':25,'Teklif Verildi':40,'Deneme Konuşuldu':50,'Sözlü Onay':70,'Sipariş Alındı':100,'Kaybedildi':0};
-  const EPC_COLUMNS = ['epc_key','firmaAdi','sehir','yetkiliKisi','telefon','email','notlar','owner','updated_at'];
-  const PROJ_COLUMNS = ['proje_key','epc_key','projeAdi','projeTuru','gucKw','panelGucuW','asama','olasilik','tahminiBaslamaAyi','sonTemasTarihi','birSonrakiAksiyon','sorumlu','etiketler','notlar','owner','updated_at'];
-  const SORUMLU = ['Murat','Hüseyin','Buse'];
-  const state = load();
-  const imp = {pending:null,decisions:[]};
-  const selectedProjects = new Set();
+  const STAGES={'İlk Temas':10,'Qualified':25,'Teklif Verildi':40,'Deneme Konuşuldu':50,'Sözlü Onay':70,'Sipariş Alındı':100,'Kaybedildi':0};
+  const SORUMLU=['Murat','Hüseyin','Buse'];
+  const STORAGE='mini_crm_v3';
+  const EPC_COLUMNS=['epc_key','firmaAdi','sehir','yetkiliKisi','telefon','email','notlar','owner','updated_at'];
+  const PROJ_COLUMNS=['proje_key','epc_key','projeAdi','projeTuru','gucKw','panelGucuW','asama','olasilik','tahminiBaslamaAyi','sonTemasTarihi','birSonrakiAksiyon','sorumlu','etiketler','notlar','owner','updated_at'];
+  const el = Object.fromEntries(Array.from(document.querySelectorAll('[id]')).map(n=>[n.id,n]));
+
+  const state=load(); const selectedProjects=new Set(); const imp={pending:null,decisions:[]};
 
   function nowIso(){return new Date().toISOString();}
   function today(){return new Date().toISOString().slice(0,10);}
   function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');}
-  function normalize(v){
-    const map={'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'c','Ğ':'g','İ':'i','I':'i','Ö':'o','Ş':'s','Ü':'u'};
-    return (v||'').split('').map(c=>map[c]||c).join('').toLowerCase().trim().replace(/[\p{P}\p{S}]+/gu,' ').replace(/\s+/g,' ').trim();
-  }
-  function makeEpcKey(firma, sehir){return `${normalize(firma)}|${normalize(sehir)}`;}
-  function makeProjeKey(epcKey,adi,guc,ay){return `${epcKey}|${normalize(adi)}|${String(guc)}|${ay}`;}
-  function panelAdedi(g,pw){return Math.round(Number(g||0)*1000/Number(pw||595));}
-  function agirlikliPanel(p){return Math.round(panelAdedi(p.gucKw,p.panelGucuW)*Number(p.olasilik||0)/100);}
-  function agirlikliKw(p){return Math.round(Number(p.gucKw||0)*Number(p.olasilik||0))/100;}
+  function normalize(v){const m={'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'c','Ğ':'g','İ':'i','I':'i','Ö':'o','Ş':'s','Ü':'u'}; return (v||'').split('').map(c=>m[c]||c).join('').toLowerCase().trim().replace(/[\p{P}\p{S}]+/gu,' ').replace(/\s+/g,' ').trim();}
+  const makeEpcKey=(f,s)=>`${normalize(f)}|${normalize(s)}`;
+  const makeProjeKey=(e,p,g,a)=>`${e}|${normalize(p)}|${String(g)}|${a}`;
+  const panelAdedi=(g,p)=>Math.round(Number(g||0)*1000/Number(p||595));
+  const agirlikliPanel=(p)=>Math.round(panelAdedi(p.gucKw,p.panelGucuW)*Number(p.olasilik||0)/100);
+  const agirlikliKw=(p)=>Math.round(Number(p.gucKw||0)*Number(p.olasilik||0))/100;
 
-  function load(){
-    try {const s=JSON.parse(localStorage.getItem(STORAGE)||'{}');
-      return {epcler:s.epcler||[],projeler:s.projeler||[],activities:s.activities||[],tasks:s.tasks||[],lastImportSummary:s.lastImportSummary||null,theme:s.theme||'light'};
-    } catch {return {epcler:[],projeler:[],activities:[],tasks:[],lastImportSummary:null,theme:'light'};}
-  }
+  function load(){try{const s=JSON.parse(localStorage.getItem(STORAGE)||'{}'); return {epcler:s.epcler||[],projeler:s.projeler||[],activities:s.activities||[],tasks:s.tasks||[],lastImportSummary:s.lastImportSummary||null,theme:s.theme||'light'};}catch{return {epcler:[],projeler:[],activities:[],tasks:[],lastImportSummary:null,theme:'light'};}}
   function save(){localStorage.setItem(STORAGE,JSON.stringify(state));}
 
-  function setTheme(t){document.body.classList.toggle('dark',t==='dark'); state.theme=t; save(); document.getElementById('themeToggle').textContent=t==='dark'?'☀️ Light Mode':'🌙 Dark Mode';}
-  function setTab(tab){document.querySelectorAll('[id^="tab-"]').forEach(s=>s.classList.add('hidden')); document.getElementById('tab-'+tab).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));}
+  function sanitizeEpc(r){const firmaAdi=(r.firmaAdi||'').trim(),sehir=(r.sehir||'').trim(); if(!firmaAdi||!sehir) return null; return {epc_key:makeEpcKey(firmaAdi,sehir),firmaAdi,sehir,yetkiliKisi:r.yetkiliKisi||'',telefon:r.telefon||'',email:r.email||'',notlar:r.notlar||'',owner:r.owner||'',updated_at:r.updated_at||nowIso()};}
+  function sanitizeProject(r){const epc_key=(r.epc_key||'').trim(),projeAdi=(r.projeAdi||'').trim(),ay=(r.tahminiBaslamaAyi||'').trim(),g=Number(r.gucKw); if(!epc_key||!projeAdi||!Number.isFinite(g)||!/^\d{4}-\d{2}$/.test(ay)) return null; const asama=Object.hasOwn(STAGES,r.asama)?r.asama:'İlk Temas'; const ol=Number.isFinite(Number(r.olasilik))?Number(r.olasilik):STAGES[asama]; const etiketler=Array.isArray(r.etiketler)?r.etiketler:String(r.etiketler||'').split(',').map(x=>x.trim()).filter(Boolean); return {proje_key:makeProjeKey(epc_key,projeAdi,g,ay),epc_key,projeAdi,projeTuru:r.projeTuru||'',gucKw:g,panelGucuW:Number(r.panelGucuW||595)||595,asama,olasilik:Math.max(0,Math.min(100,ol)),tahminiBaslamaAyi:ay,sonTemasTarihi:r.sonTemasTarihi||'',birSonrakiAksiyon:r.birSonrakiAksiyon||'',sorumlu:SORUMLU.includes(r.sorumlu)?r.sorumlu:'',etiketler,notlar:r.notlar||'',owner:r.owner||'',updated_at:r.updated_at||nowIso()};}
 
-  function renderAll(){renderOptions(); renderEpcs(); renderProjects(); renderDashboard(); renderSales(); renderKanban(); renderActivities(); renderTasks(); renderImportSummary();}
+  function setTheme(t){document.body.classList.toggle('dark',t==='dark'); state.theme=t; el.themeToggle.textContent=t==='dark'?'☀️ Light Mode':'🌙 Dark Mode'; save();}
+  function setTab(tab){document.querySelectorAll('section[id^="tab-"]').forEach(s=>s.classList.add('hidden')); document.getElementById('tab-'+tab).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));}
 
   function renderOptions(){
-    const epcSel=document.getElementById('projEpcKey');
-    const html=['<option value="">EPC seçiniz</option>',...state.epcler.map(e=>`<option value="${esc(e.epc_key)}">${esc(e.firmaAdi)} (${esc(e.sehir)})</option>`)].join('');
-    epcSel.innerHTML=html;
-    const pOpts=['<option value="">Proje seçiniz</option>',...state.projeler.map(p=>`<option value="${esc(p.proje_key)}">${esc(p.projeAdi)}</option>`)].join('');
-    document.getElementById('actProje').innerHTML=pOpts;
-    document.getElementById('taskProje').innerHTML=pOpts;
-    const sOpts=['<option value="">Tümü</option>',...Object.keys(STAGES).map(s=>`<option>${esc(s)}</option>`)];
-    document.getElementById('fltStage').innerHTML=sOpts.join('');
-    document.getElementById('bulkStage').innerHTML=['<option value="">Aşamaya taşı...</option>',...Object.keys(STAGES).map(s=>`<option>${esc(s)}</option>`)].join('');
-    document.getElementById('projAsama').innerHTML=Object.keys(STAGES).map(s=>`<option>${esc(s)}</option>`).join('');
+    el.projEpcKey.innerHTML=['<option value="">EPC seçiniz</option>',...state.epcler.map(e=>`<option value="${esc(e.epc_key)}">${esc(e.firmaAdi)} (${esc(e.sehir)})</option>`)].join('');
+    const projOpts=['<option value="">Proje seçiniz</option>',...state.projeler.map(p=>`<option value="${esc(p.proje_key)}">${esc(p.projeAdi)}</option>`)].join('');
+    el.actProje.innerHTML=projOpts; el.taskProje.innerHTML=projOpts;
+    const stageOpts=['<option value="">Tümü</option>',...Object.keys(STAGES).map(s=>`<option>${esc(s)}</option>`)].join('');
+    el.fltStage.innerHTML=stageOpts; el.bulkStage.innerHTML=['<option value="">Aşamaya taşı...</option>',...Object.keys(STAGES).map(s=>`<option>${esc(s)}</option>`)].join('');
+    el.projAsama.innerHTML=Object.keys(STAGES).map(s=>`<option>${esc(s)}</option>`).join('');
   }
+  function resetEpc(){el.epcForm.reset();el.epcEditKey.value='';el.epcUpdatedAt.value='';el.epcTitle.textContent='EPC Ekle';}
+  function resetProj(){el.projectForm.reset();el.projectEditKey.value='';el.projTitle.textContent='Proje Ekle';el.projPanel.value='595';el.projAsama.value='İlk Temas';el.autoProb.checked=true;el.projOlasilik.value=STAGES['İlk Temas'];}
 
-  function sanitizeEpc(r){const firmaAdi=(r.firmaAdi||'').trim(), sehir=(r.sehir||'').trim(); if(!firmaAdi||!sehir) return null; return {epc_key:makeEpcKey(firmaAdi,sehir),firmaAdi,sehir,yetkiliKisi:r.yetkiliKisi||'',telefon:r.telefon||'',email:r.email||'',notlar:r.notlar||'',owner:r.owner||'',updated_at:r.updated_at||nowIso()};}
-  function sanitizeProject(r){
-    const epc_key=(r.epc_key||'').trim(), projeAdi=(r.projeAdi||'').trim(), ay=(r.tahminiBaslamaAyi||'').trim(), guc=Number(r.gucKw);
-    if(!epc_key||!projeAdi||!Number.isFinite(guc)||!/^\d{4}-\d{2}$/.test(ay)) return null;
-    const asama=Object.hasOwn(STAGES,r.asama)?r.asama:'İlk Temas';
-    const ol=Number.isFinite(Number(r.olasilik))?Number(r.olasilik):STAGES[asama];
-    const etiketler = Array.isArray(r.etiketler)?r.etiketler: String(r.etiketler||'').split(',').map(x=>x.trim()).filter(Boolean);
-    return {proje_key:makeProjeKey(epc_key,projeAdi,guc,ay),epc_key,projeAdi,projeTuru:r.projeTuru||'',gucKw:guc,panelGucuW:Number(r.panelGucuW||595)||595,asama,olasilik:Math.max(0,Math.min(100,ol)),tahminiBaslamaAyi:ay,sonTemasTarihi:r.sonTemasTarihi||'',birSonrakiAksiyon:r.birSonrakiAksiyon||'',sorumlu:SORUMLU.includes(r.sorumlu)?r.sorumlu:'',etiketler,notlar:r.notlar||'',owner:r.owner||'',updated_at:r.updated_at||nowIso()};
-  }
+  function filteredProjects(){const q=normalize(el.fltSearch.value),s=el.fltStage.value,r=el.fltResp.value,t=normalize(el.fltTag.value); return state.projeler.filter(p=>{if(s&&p.asama!==s) return false; if(r&&p.sorumlu!==r) return false; if(t&&!p.etiketler.map(normalize).some(x=>x.includes(t))) return false; if(!q) return true; const epc=state.epcler.find(e=>e.epc_key===p.epc_key); return normalize([p.projeAdi,p.projeTuru,p.notlar,p.birSonrakiAksiyon,p.sorumlu,(epc?.firmaAdi||''),(epc?.sehir||'')].join(' ')).includes(q);});}
 
-  function resetEpc(){document.getElementById('epcForm').reset(); document.getElementById('epcEditKey').value=''; document.getElementById('epcUpdatedAt').value=''; document.getElementById('epcTitle').textContent='EPC Ekle';}
-  function resetProj(){document.getElementById('projectForm').reset(); document.getElementById('projectEditKey').value=''; document.getElementById('projTitle').textContent='Proje Ekle'; document.getElementById('projPanelW').value='595'; document.getElementById('projAsama').value='İlk Temas'; document.getElementById('autoProb').checked=true; document.getElementById('projOlasilik').value=STAGES['İlk Temas'];}
+  function renderEpcs(){el.epcTable.querySelector('tbody').innerHTML=state.epcler.map(e=>`<tr><td>${esc(e.firmaAdi)}</td><td>${esc(e.sehir)}</td><td>${esc(e.yetkiliKisi)}</td><td>${esc(e.owner)}</td><td><span class="pill">${esc(e.updated_at)}</span></td><td><div class="actions"><button class="btn small" data-epcedit="${esc(e.epc_key)}">Düzenle</button><button class="btn small danger" data-epcdel="${esc(e.epc_key)}">Sil</button></div></td></tr>`).join('');}
+  function renderProjects(){const epm=new Map(state.epcler.map(e=>[e.epc_key,e])); el.projectTable.querySelector('tbody').innerHTML=filteredProjects().map(p=>`<tr><td><input type="checkbox" data-sel="${esc(p.proje_key)}" ${selectedProjects.has(p.proje_key)?'checked':''}></td><td>${esc(p.projeAdi)}</td><td>${esc((epm.get(p.epc_key)?.firmaAdi||'')+' / '+(epm.get(p.epc_key)?.sehir||''))}</td><td><span class="pill">${esc(p.asama)} (%${p.olasilik})</span></td><td>${p.gucKw}</td><td>${panelAdedi(p.gucKw,p.panelGucuW)}</td><td>${agirlikliPanel(p)}</td><td>${esc(p.tahminiBaslamaAyi)}</td><td>${esc(p.sorumlu)}</td><td>${esc(p.etiketler.join(', '))}</td><td><div class="actions"><button class="btn small" data-projedit="${esc(p.proje_key)}">Düzenle</button><button class="btn small danger" data-projdel="${esc(p.proje_key)}">Sil</button></div></td></tr>`).join('');}
 
-  function renderEpcs(){
-    document.querySelector('#epcTable tbody').innerHTML=state.epcler.map(e=>`<tr><td>${esc(e.firmaAdi)}</td><td>${esc(e.sehir)}</td><td>${esc(e.yetkiliKisi)}</td><td>${esc(e.owner)}</td><td><span class="pill">${esc(e.updated_at)}</span></td><td><div class="actions"><button class="btn small" data-epcedit="${esc(e.epc_key)}">Düzenle</button><button class="btn small danger" data-epcdel="${esc(e.epc_key)}">Sil</button></div></td></tr>`).join('');
-  }
+  function renderDashboard(){const sumKw=state.projeler.reduce((a,p)=>a+Number(p.gucKw||0),0), wKw=state.projeler.reduce((a,p)=>a+agirlikliKw(p),0), totalPanels=state.projeler.reduce((a,p)=>a+panelAdedi(p.gucKw,p.panelGucuW),0); el.dash.innerHTML=[['Toplam EPC',state.epcler.length],['Toplam Proje',state.projeler.length],['Toplam kW',Math.round(sumKw*100)/100],['Ağırlıklı kW',Math.round(wKw*100)/100],['Toplam Panel',totalPanels]].map(c=>`<div class="col-3 stat"><div class="l">${c[0]}</div><div class="v">${c[1]}</div></div>`).join(''); const upcoming=state.tasks.filter(t=>!t.done&&dayDiff(today(),t.due)>=0&&dayDiff(today(),t.due)<=3); el.reminderBox.innerHTML=upcoming.length?`<div class="remind">⏰ 3 gün içinde ${upcoming.length} görev var.</div>`:'';}
 
-  function filteredProjects(){
-    const q=normalize(document.getElementById('fltSearch').value||'');
-    const s=document.getElementById('fltStage').value;
-    const r=document.getElementById('fltResp').value;
-    const t=normalize(document.getElementById('fltTag').value||'');
-    return state.projeler.filter(p=>{
-      if(s && p.asama!==s) return false;
-      if(r && p.sorumlu!==r) return false;
-      if(t && !p.etiketler.map(normalize).some(x=>x.includes(t))) return false;
-      if(!q) return true;
-      const epc=state.epcler.find(e=>e.epc_key===p.epc_key);
-      const text=normalize([p.projeAdi,p.projeTuru,p.notlar,p.birSonrakiAksiyon,p.sorumlu,(epc?.firmaAdi||''),(epc?.sehir||'')].join(' '));
-      return text.includes(q);
-    });
-  }
+  function renderSales(){const b={}; Object.keys(STAGES).forEach(k=>b[k]={adet:0,kw:0,wkw:0,wpanel:0}); const month={}; const perf={Murat:0,Hüseyin:0,Buse:0}; state.projeler.forEach(p=>{b[p.asama].adet++;b[p.asama].kw+=Number(p.gucKw||0);b[p.asama].wkw+=agirlikliKw(p);b[p.asama].wpanel+=agirlikliPanel(p);month[p.tahminiBaslamaAyi]=(month[p.tahminiBaslamaAyi]||0)+Number(p.gucKw||0); if(perf[p.sorumlu]!==undefined) perf[p.sorumlu]++;}); const won=state.projeler.filter(p=>p.asama==='Sipariş Alındı').length,lost=state.projeler.filter(p=>p.asama==='Kaybedildi').length; const rows=Object.entries(b).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.adet}</td><td>${Math.round(v.kw*100)/100}</td><td>${Math.round(v.wkw*100)/100}</td><td>${v.wpanel}</td></tr>`).join(''); const mrows=Object.entries(month).sort((a,b)=>a[0].localeCompare(b[0])).map(([m,kw])=>`<tr><td>${m}</td><td>${Math.round(kw*100)/100}</td></tr>`).join(''); el.salesGrid.innerHTML=`<div class="col-8"><table><thead><tr><th>Aşama</th><th>Adet</th><th>Toplam kW</th><th>Ağırlıklı kW</th><th>Ağırlıklı Panel</th></tr></thead><tbody>${rows}</tbody></table></div><div class="col-4"><div class="stat"><div class="l">Kazanıldı/Kaybedildi</div><div class="v">${won} / ${lost}</div></div><br><div class="stat"><div class="l">Sorumlu Performansı</div>${Object.entries(perf).map(([n,v])=>`<div>${n}: <b>${v}</b></div>`).join('')}</div></div><div class="col-12"><h4>Aylık Beklenen Başlangıç Planı</h4><table><thead><tr><th>Ay</th><th>kW</th></tr></thead><tbody>${mrows||'<tr><td colspan="2">Veri yok</td></tr>'}</tbody></table></div>`;}
 
-  function renderProjects(){
-    const epcMap=new Map(state.epcler.map(e=>[e.epc_key,e]));
-    document.querySelector('#projectTable tbody').innerHTML=filteredProjects().map(p=>`<tr>
-      <td><input type="checkbox" data-sel="${esc(p.proje_key)}" ${selectedProjects.has(p.proje_key)?'checked':''}/></td>
-      <td>${esc(p.projeAdi)}</td>
-      <td>${esc((epcMap.get(p.epc_key)?.firmaAdi||'')+' / '+(epcMap.get(p.epc_key)?.sehir||''))}</td>
-      <td><span class="pill">${esc(p.asama)} (%${p.olasilik})</span></td>
-      <td>${p.gucKw}</td><td>${panelAdedi(p.gucKw,p.panelGucuW)}</td><td>${agirlikliPanel(p)}</td><td>${esc(p.tahminiBaslamaAyi)}</td><td>${esc(p.sorumlu)}</td><td>${esc((p.etiketler||[]).join(', '))}</td>
-      <td><div class="actions"><button class="btn small" data-projedit="${esc(p.proje_key)}">Düzenle</button><button class="btn small danger" data-projdel="${esc(p.proje_key)}">Sil</button></div></td></tr>`).join('');
-  }
+  function renderKanban(){el.kanban.innerHTML=Object.keys(STAGES).map(s=>`<div class="kcol" data-stage="${esc(s)}"><h4>${esc(s)}</h4>${state.projeler.filter(p=>p.asama===s).map(p=>`<div class="kcard" draggable="true" data-drag="${esc(p.proje_key)}"><b>${esc(p.projeAdi)}</b><div class="hint">${p.gucKw} kW · %${p.olasilik}</div><div class="hint">${esc(p.sorumlu||'-')}</div></div>`).join('')||'<div class="hint">Boş</div>'}</div>`).join('');}
+  function renderActivities(){const pm=new Map(state.projeler.map(p=>[p.proje_key,p])); el.activityList.innerHTML=[...state.activities].sort((a,b)=>(b.date+b.created).localeCompare(a.date+a.created)).map(a=>`<div class="card"><b>${esc(a.type)}</b> · <span class="pill">${esc(a.date)}</span><div>${esc(a.text)}</div><div class="hint">Proje: ${esc(pm.get(a.proje_key)?.projeAdi||'-')}</div></div>`).join('')||'<div class="hint">Aktivite yok.</div>';}
+  function renderTasks(){const pm=new Map(state.projeler.map(p=>[p.proje_key,p])); el.taskTable.querySelector('tbody').innerHTML=state.tasks.map((t,i)=>`<tr><td><input type="checkbox" data-taskdone="${i}" ${t.done?'checked':''}></td><td>${esc(t.title)}</td><td>${esc(pm.get(t.proje_key)?.projeAdi||'-')}</td><td>${esc(t.due)}</td><td>${esc(t.priority)}</td><td><button class="btn small danger" data-taskdel="${i}">Sil</button></td></tr>`).join('');}
 
-  function renderDashboard(){
-    const sumKW=state.projeler.reduce((a,p)=>a+Number(p.gucKw||0),0);
-    const weightedKW=state.projeler.reduce((a,p)=>a+agirlikliKw(p),0);
-    const cards=[['Toplam EPC',state.epcler.length],['Toplam Proje',state.projeler.length],['Toplam kW',Math.round(sumKW*100)/100],['Ağırlıklı kW',Math.round(weightedKW*100)/100],['Toplam Panel',state.projeler.reduce((a,p)=>a+panelAdedi(p.gucKw,p.panelGucuW),0)]];
-    document.getElementById('dash').innerHTML=cards.map(c=>`<div class="col-3 stat"><div class="l">${c[0]}</div><div class="v">${c[1]}</div></div>`).join('');
-    const upcoming=state.tasks.filter(t=>!t.done && dayDiff(today(),t.due)<=3 && dayDiff(today(),t.due)>=0);
-    document.getElementById('reminderBox').innerHTML=upcoming.length?`<div class="remind">⏰ Yaklaşan ${upcoming.length} görev var (3 gün içinde). Görevler sekmesinden görüntüleyin.</div>`:'';
-  }
+  function renderImportSummary(){if(!state.lastImportSummary){el.importSummaryCard.classList.add('hidden');el.importSummary.innerHTML='';return;} el.importSummaryCard.classList.remove('hidden'); const s=state.lastImportSummary; el.importSummary.innerHTML=`<div class="grid"><div class="col-4 stat"><div class="l">Eklenen</div><div class="v">${s.added}</div></div><div class="col-4 stat"><div class="l">Güncellenen</div><div class="v">${s.updated}</div></div><div class="col-4 stat"><div class="l">Çözülen Çakışma</div><div class="v">${s.conflicts}</div></div></div>`;}
 
-  function renderSales(){
-    const breakdown={}; Object.keys(STAGES).forEach(k=>breakdown[k]={adet:0,kw:0,wkw:0,wpanel:0});
-    state.projeler.forEach(p=>{const b=breakdown[p.asama]||(breakdown[p.asama]={adet:0,kw:0,wkw:0,wpanel:0}); b.adet++; b.kw+=Number(p.gucKw||0); b.wkw+=agirlikliKw(p); b.wpanel+=agirlikliPanel(p);});
-    const month={}; state.projeler.forEach(p=>{month[p.tahminiBaslamaAyi]=(month[p.tahminiBaslamaAyi]||0)+Number(p.gucKw||0);});
-    const won=state.projeler.filter(p=>p.asama==='Sipariş Alındı').length, lost=state.projeler.filter(p=>p.asama==='Kaybedildi').length;
-    const perf={Murat:0,Hüseyin:0,Buse:0}; state.projeler.forEach(p=>{if(perf[p.sorumlu]!==undefined) perf[p.sorumlu]+=1;});
-    const rows=Object.entries(breakdown).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.adet}</td><td>${Math.round(v.kw*100)/100}</td><td>${Math.round(v.wkw*100)/100}</td><td>${v.wpanel}</td></tr>`).join('');
-    const mrows=Object.entries(month).sort((a,b)=>a[0].localeCompare(b[0])).map(([m,kw])=>`<tr><td>${m}</td><td>${Math.round(kw*100)/100}</td></tr>`).join('');
-    document.getElementById('salesGrid').innerHTML=`
-      <div class="col-8"><table><thead><tr><th>Aşama</th><th>Adet</th><th>Toplam kW</th><th>Ağırlıklı kW</th><th>Ağırlıklı Panel</th></tr></thead><tbody>${rows}</tbody></table></div>
-      <div class="col-4"><div class="stat"><div class="l">Kazanıldı / Kaybedildi</div><div class="v">${won} / ${lost}</div></div><br>
-        <div class="stat"><div class="l">Sorumlu Performansı</div><div>${Object.entries(perf).map(([k,v])=>`<div>${k}: <b>${v}</b></div>`).join('')}</div></div></div>
-      <div class="col-12"><h4>Aylık Beklenen Başlangıç Planı (kW)</h4><table><thead><tr><th>Ay</th><th>kW</th></tr></thead><tbody>${mrows||'<tr><td colspan="2">Veri yok</td></tr>'}</tbody></table></div>`;
-  }
+  function renderAll(){renderOptions();renderEpcs();renderProjects();renderDashboard();renderSales();renderKanban();renderActivities();renderTasks();renderImportSummary();}
 
-  function renderKanban(){
-    const kb=document.getElementById('kanban');
-    kb.innerHTML=Object.keys(STAGES).map(stage=>{
-      const cards=state.projeler.filter(p=>p.asama===stage).map(p=>`<div class="kcard" draggable="true" data-drag="${esc(p.proje_key)}"><b>${esc(p.projeAdi)}</b><div class="hint">${p.gucKw} kW · %${p.olasilik}</div><div class="hint">${esc(p.sorumlu||'-')}</div></div>`).join('');
-      return `<div class="kcol" data-stage="${esc(stage)}"><h4>${esc(stage)}</h4>${cards||'<div class="hint">Boş</div>'}</div>`;
-    }).join('');
-  }
+  function dayDiff(a,b){return Math.floor((new Date(b)-new Date(a))/86400000);} 
+  function parseCsv(text){if(text.charCodeAt(0)===0xFEFF) text=text.slice(1); const rows=[]; let i=0,cur='',row=[],q=false; while(i<text.length){const ch=text[i]; if(q){if(ch==='"'&&text[i+1]==='"'){cur+='"';i+=2;continue;} if(ch==='"'){q=false;i++;continue;} cur+=ch;i++;continue;} if(ch==='"'){q=true;i++;continue;} if(ch===','){row.push(cur);cur='';i++;continue;} if(ch==='\n'){row.push(cur);rows.push(row);row=[];cur='';i++;continue;} if(ch==='\r'){i++;continue;} cur+=ch;i++;} if(cur.length||row.length){row.push(cur);rows.push(row);} if(!rows.length) return []; const h=rows[0].map(x=>x.trim()); return rows.slice(1).filter(r=>r.some(c=>c!=='')).map(r=>Object.fromEntries(h.map((k,j)=>[k,r[j]??''])));}
+  const csvEscape=(v)=>{const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replaceAll('"','""')+'"':s;};
+  const toCsv=(rows,cols)=>'\uFEFF'+[cols.join(','),...rows.map(r=>cols.map(c=>csvEscape(Array.isArray(r[c])?r[c].join('|'):r[c])).join(','))].join('\r\n');
+  const download=(name,txt)=>{const b=new Blob([txt],{type:'text/csv;charset=utf-8;'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);};
 
-  function renderActivities(){
-    const pMap=new Map(state.projeler.map(p=>[p.proje_key,p]));
-    document.getElementById('activityList').innerHTML=[...state.activities].sort((a,b)=>(b.date+a.created).localeCompare(a.date+b.created)).map(a=>`<div class="card"><b>${esc(a.type)}</b> · <span class="pill">${esc(a.date)}</span><div>${esc(a.text)}</div><div class="hint">Proje: ${esc(pMap.get(a.proje_key)?.projeAdi||'-')}</div></div>`).join('') || '<div class="hint">Aktivite yok.</div>';
-  }
+  const chooseSuggested=(a,b)=>{const ad=Date.parse(a.updated_at||''),bd=Date.parse(b.updated_at||''); if(Number.isNaN(ad)&&Number.isNaN(bd)) return 'existing'; if(Number.isNaN(ad)) return 'incoming'; if(Number.isNaN(bd)) return 'existing'; return bd>ad?'incoming':'existing';};
+  function buildConflicts(inE,inP){const exE=new Map(state.epcler.map(x=>[x.epc_key,x])),exP=new Map(state.projeler.map(x=>[x.proje_key,x])); const addE=[],addP=[],conf=[]; inE.forEach(x=>{const ex=exE.get(x.epc_key); ex?conf.push({type:'EPC',key:x.epc_key,existing:ex,incoming:x,choice:'ask',fieldChoices:{}}):addE.push(x)}); inP.forEach(x=>{const ex=exP.get(x.proje_key); ex?conf.push({type:'PROJE',key:x.proje_key,existing:ex,incoming:x,choice:'ask',fieldChoices:{}}):addP.push(x)}); return {addE,addP,conf};}
 
-  function renderTasks(){
-    const pMap=new Map(state.projeler.map(p=>[p.proje_key,p]));
-    document.querySelector('#taskTable tbody').innerHTML=state.tasks.map((t,i)=>`<tr><td><input type="checkbox" data-taskdone="${i}" ${t.done?'checked':''}/></td><td>${esc(t.title)}</td><td>${esc(pMap.get(t.proje_key)?.projeAdi||'-')}</td><td>${esc(t.due)}</td><td>${esc(t.priority)}</td><td><button class="btn small danger" data-taskdel="${i}">Sil</button></td></tr>`).join('');
-  }
+  function renderConflicts(){const decided=imp.decisions.filter(c=>c.choice!=='ask').length; el.confCounter.textContent=`Toplam: ${imp.decisions.length} · Karar verilen: ${decided} · Bekleyen: ${imp.decisions.length-decided}`; el.confList.innerHTML=''; imp.decisions.forEach((c,i)=>{const row=document.createElement('div'); row.className='conflict-row'; const fields=Object.keys(c.incoming).filter(f=>!['epc_key','proje_key'].includes(f)); row.innerHTML=`<div class="actions" style="justify-content:space-between"><div><b>${c.type}</b> <span class="hint">${esc(c.key)}</span> <span class="pill">${c.choice==='ask'?'Seçim bekleniyor':'Seçim: '+c.choice}</span></div><div class="actions"><button class="btn small ${c.choice==='existing'?'sel':''}" data-choice="existing" data-i="${i}">Bendeki kalsın</button><button class="btn small ${c.choice==='incoming'?'sel':''}" data-choice="incoming" data-i="${i}">Gelen kalsın</button><button class="btn small ${c.choice==='field'?'sel':''}" data-choice="field" data-i="${i}">Alan alan seç</button></div></div><div class="grid" style="margin-top:8px"><div class="col-6"><pre>${esc(JSON.stringify(c.existing,null,2))}</pre></div><div class="col-6"><pre>${esc(JSON.stringify(c.incoming,null,2))}</pre></div></div><div id="f-${i}" class="${c.choice==='field'?'':'hidden'}"></div>`; el.confList.appendChild(row); const fa=row.querySelector(`#f-${i}`); fa.innerHTML=fields.map(f=>`<div class="field-pick"><div><b>${esc(f)}</b></div><label><input type="radio" name="p-${i}-${f}" value="existing" ${((c.fieldChoices[f]||'existing')==='existing')?'checked':''}>Mevcut</label><label><input type="radio" name="p-${i}-${f}" value="incoming" ${((c.fieldChoices[f]||'existing')==='incoming')?'checked':''}>Gelen</label>${['notlar','birSonrakiAksiyon'].includes(f)?`<label><input type="radio" name="p-${i}-${f}" value="merge" ${((c.fieldChoices[f]||'existing')==='merge')?'checked':''}>Birleştir</label>`:'<span></span>'}</div>`).join(''); row.addEventListener('click',ev=>{const b=ev.target.closest('[data-choice]'); if(!b) return; c.choice=b.dataset.choice; renderConflicts();}); row.addEventListener('change',ev=>{if(!ev.target.name?.startsWith(`p-${i}-`)) return; c.choice='field'; c.fieldChoices[ev.target.name.replace(`p-${i}-`,'')]=ev.target.value; renderConflicts();});});}
+  function applyDecision(c){if(c.choice==='existing') return c.existing; if(c.choice==='incoming') return c.incoming; const out={...c.existing}; Object.keys(c.incoming).forEach(f=>{if(['epc_key','proje_key'].includes(f)) return; const m=c.fieldChoices[f]||'existing'; if(m==='incoming') out[f]=c.incoming[f]; else if(m==='merge'&&['notlar','birSonrakiAksiyon'].includes(f)) out[f]=[c.existing[f],c.incoming[f]].filter(Boolean).join('\n---\n');}); return out;}
+  function applyMerge(){if(imp.decisions.some(c=>c.choice==='ask')) return alert('Lütfen tüm çakışmalar için seçim yapın.'); let added=0,updated=0; imp.pending.addE.forEach(x=>{state.epcler.push(x);added++}); imp.pending.addP.forEach(x=>{state.projeler.push(x);added++}); imp.decisions.forEach(c=>{const res=applyDecision(c); if(c.type==='EPC'){const i=state.epcler.findIndex(x=>x.epc_key===c.key); if(i>=0&&JSON.stringify(state.epcler[i])!==JSON.stringify(res)){state.epcler[i]=res;updated++;}} else {const i=state.projeler.findIndex(x=>x.proje_key===c.key); if(i>=0&&JSON.stringify(state.projeler[i])!==JSON.stringify(res)){state.projeler[i]=res;updated++;}}}); state.lastImportSummary={added,updated,conflicts:imp.decisions.length}; save(); closeConf(); renderAll(); alert('İçe aktarma tamamlandı.');}
+  const openConf=()=>el.confModal.classList.remove('hidden'); const closeConf=()=>{el.confModal.classList.add('hidden');imp.pending=null;imp.decisions=[];el.confirmSuggested.disabled=true;};
 
-  function dayDiff(from,to){return Math.floor((new Date(to)-new Date(from))/86400000);}
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+  el.themeToggle.addEventListener('click',()=>setTheme(state.theme==='dark'?'light':'dark'));
+  el.projAsama.addEventListener('change',()=>{if(el.autoProb.checked) el.projOlasilik.value=STAGES[el.projAsama.value]||0;});
+  el.autoProb.addEventListener('change',()=>{if(el.autoProb.checked) el.projOlasilik.value=STAGES[el.projAsama.value]||0;});
 
-  function parseCsv(text){
-    const rows=[]; let i=0,cur='',row=[],q=false; if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
-    while(i<text.length){const ch=text[i];
-      if(q){if(ch==='"'&&text[i+1]==='"'){cur+='"';i+=2;continue;} if(ch==='"'){q=false;i++;continue;} cur+=ch;i++;continue;}
-      if(ch==='"'){q=true;i++;continue;} if(ch===','){row.push(cur);cur='';i++;continue;} if(ch==='\n'){row.push(cur);rows.push(row);row=[];cur='';i++;continue;} if(ch==='\r'){i++;continue;} cur+=ch;i++;}
-    if(cur.length||row.length){row.push(cur);rows.push(row);} if(!rows.length) return [];
-    const h=rows[0].map(x=>x.trim()); return rows.slice(1).filter(r=>r.some(c=>c!=='')).map(r=>Object.fromEntries(h.map((k,j)=>[k,r[j]??''])));
-  }
-  function csvEscape(v){const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replaceAll('"','""')+'"':s;}
-  function toCsv(rows,cols){return '\uFEFF'+[cols.join(','),...rows.map(r=>cols.map(c=>csvEscape(Array.isArray(r[c])?r[c].join('|'):r[c])).join(','))].join('\r\n');}
-  function download(name,txt){const b=new Blob([txt],{type:'text/csv;charset=utf-8;'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);}
+  el.epcForm.addEventListener('click',ev=>{const b=ev.target.closest('[data-action]'); if(b) el.epcAction.value=b.dataset.action;});
+  el.projectForm.addEventListener('click',ev=>{const b=ev.target.closest('[data-action]'); if(b) el.projectAction.value=b.dataset.action;});
 
-  function chooseSuggested(a,b){const ad=Date.parse(a.updated_at||''), bd=Date.parse(b.updated_at||''); if(Number.isNaN(ad)&&Number.isNaN(bd)) return 'existing'; if(Number.isNaN(ad)) return 'incoming'; if(Number.isNaN(bd)) return 'existing'; return bd>ad?'incoming':'existing';}
+  el.epcForm.addEventListener('submit',ev=>{ev.preventDefault(); const rec=sanitizeEpc({firmaAdi:el.epcFirmaAdi.value,sehir:el.epcSehir.value,yetkiliKisi:el.epcYetkili.value,telefon:el.epcTelefon.value,email:el.epcEmail.value,notlar:el.epcNotlar.value,owner:el.epcOwner.value,updated_at:nowIso()}); if(!rec) return alert('Firma Adı ve Şehir zorunludur.'); const action=el.epcAction.value, edit=el.epcEditKey.value; if(action==='new'||!edit){if(state.epcler.some(x=>x.epc_key===rec.epc_key)) return alert('Bu EPC zaten mevcut.'); state.epcler.push(rec);} else {const idx=state.epcler.findIndex(x=>x.epc_key===edit); if(idx<0) return; if(rec.epc_key!==edit&&state.epcler.some(x=>x.epc_key===rec.epc_key)) return alert('Yeni anahtar başka EPC ile çakışıyor.'); state.epcler[idx]=rec; if(edit!==rec.epc_key){state.projeler=state.projeler.map(p=>p.epc_key===edit?({...p,epc_key:rec.epc_key,proje_key:makeProjeKey(rec.epc_key,p.projeAdi,p.gucKw,p.tahminiBaslamaAyi)}):p);} } save(); resetEpc(); renderAll();});
 
-  function buildConflicts(inE, inP){
-    const exE=new Map(state.epcler.map(x=>[x.epc_key,x])), exP=new Map(state.projeler.map(x=>[x.proje_key,x]));
-    const addE=[],addP=[],conf=[];
-    inE.forEach(x=>{const ex=exE.get(x.epc_key); ex?conf.push({type:'EPC',key:x.epc_key,existing:ex,incoming:x,choice:'ask',fieldChoices:{}}):addE.push(x);});
-    inP.forEach(x=>{const ex=exP.get(x.proje_key); ex?conf.push({type:'PROJE',key:x.proje_key,existing:ex,incoming:x,choice:'ask',fieldChoices:{}}):addP.push(x);});
-    return {addE,addP,conf};
-  }
+  el.projectForm.addEventListener('submit',ev=>{ev.preventDefault(); const rec=sanitizeProject({epc_key:el.projEpcKey.value,projeAdi:el.projAdi.value,gucKw:Number(el.projGuc.value),panelGucuW:Number(el.projPanel.value||595),asama:el.projAsama.value,olasilik:Number(el.projOlasilik.value),tahminiBaslamaAyi:el.projAy.value,sonTemasTarihi:el.projTemas.value,birSonrakiAksiyon:el.projAksiyon.value,sorumlu:el.projSorumlu.value,notlar:el.projNotlar.value,owner:el.projOwner.value,projeTuru:el.projTuru.value,etiketler:el.projEtiket.value.split(',').map(x=>x.trim()).filter(Boolean),updated_at:nowIso()}); if(!rec) return alert('Proje Adı + Güç (kW) + Tahmini Başlama Ayı zorunlu.'); const action=el.projectAction.value, edit=el.projectEditKey.value; if(action==='new'||!edit){if(state.projeler.some(x=>x.proje_key===rec.proje_key)) return alert('Bu proje zaten mevcut.'); state.projeler.push(rec);} else {const idx=state.projeler.findIndex(x=>x.proje_key===edit); if(idx<0) return; if(rec.proje_key!==edit&&state.projeler.some(x=>x.proje_key===rec.proje_key)) return alert('Yeni anahtar mevcut projeyle çakışıyor.'); state.projeler[idx]=rec; state.activities=state.activities.map(a=>a.proje_key===edit?({...a,proje_key:rec.proje_key}):a); state.tasks=state.tasks.map(t=>t.proje_key===edit?({...t,proje_key:rec.proje_key}):t);} save(); resetProj(); renderAll();});
 
-  function renderConflicts(){
-    const list=document.getElementById('confList');
-    const decided=imp.decisions.filter(c=>c.choice!=='ask').length;
-    document.getElementById('confCounter').textContent=`Toplam: ${imp.decisions.length} · Karar verilen: ${decided} · Bekleyen: ${imp.decisions.length-decided}`;
-    list.innerHTML='';
-    imp.decisions.forEach((c,i)=>{
-      const fields=Object.keys(c.incoming).filter(f=>!['epc_key','proje_key'].includes(f));
-      const row=document.createElement('div'); row.className='conflict-row';
-      row.innerHTML=`<div class="actions" style="justify-content:space-between"><div><b>${c.type}</b> <span class="hint">${esc(c.key)}</span> <span class="pill">${c.choice==='ask'?'Seçim bekleniyor':'Seçim yapıldı: '+c.choice}</span></div>
-      <div class="actions"><button class="btn small ${c.choice==='existing'?'sel':''}" type="button" data-choice="existing" data-i="${i}">Bendeki kalsın</button>
-      <button class="btn small ${c.choice==='incoming'?'sel':''}" type="button" data-choice="incoming" data-i="${i}">Gelen kalsın</button>
-      <button class="btn small ${c.choice==='field'?'sel':''}" type="button" data-choice="field" data-i="${i}">Alan alan seç</button></div></div>
-      <div class="grid" style="margin-top:8px"><div class="col-6"><pre>${esc(JSON.stringify(c.existing,null,2))}</pre></div><div class="col-6"><pre>${esc(JSON.stringify(c.incoming,null,2))}</pre></div></div>
-      <div id="f-${i}" class="${c.choice==='field'?'':'hidden'}"></div>`;
-      list.appendChild(row);
-      const fa=row.querySelector(`#f-${i}`);
-      fa.innerHTML=fields.map(f=>`<div class="field-pick"><div><b>${esc(f)}</b></div><label><input type="radio" name="p-${i}-${f}" value="existing" ${((c.fieldChoices[f]||'existing')==='existing')?'checked':''}/>Mevcut</label><label><input type="radio" name="p-${i}-${f}" value="incoming" ${((c.fieldChoices[f]||'existing')==='incoming')?'checked':''}/>Gelen</label>${['notlar','birSonrakiAksiyon'].includes(f)?`<label><input type="radio" name="p-${i}-${f}" value="merge" ${((c.fieldChoices[f]||'existing')==='merge')?'checked':''}/>Birleştir</label>`:'<span></span>'}</div>`).join('');
-      row.addEventListener('click',(e)=>{const b=e.target.closest('[data-choice]'); if(!b) return; c.choice=b.dataset.choice; renderConflicts();});
-      row.addEventListener('change',(e)=>{if(!e.target.name?.startsWith(`p-${i}-`)) return; c.choice='field'; c.fieldChoices[e.target.name.replace(`p-${i}-`,'')]=e.target.value; renderConflicts();});
-    });
-  }
+  el.epcTable.querySelector('tbody').addEventListener('click',ev=>{const edit=ev.target.closest('[data-epcedit]')?.dataset.epcedit; const del=ev.target.closest('[data-epcdel]')?.dataset.epcdel; if(edit){const r=state.epcler.find(x=>x.epc_key===edit); if(!r) return; el.epcEditKey.value=r.epc_key; el.epcFirmaAdi.value=r.firmaAdi; el.epcSehir.value=r.sehir; el.epcYetkili.value=r.yetkiliKisi||''; el.epcTelefon.value=r.telefon||''; el.epcEmail.value=r.email||''; el.epcNotlar.value=r.notlar||''; el.epcOwner.value=r.owner||''; el.epcUpdatedAt.value=r.updated_at||''; el.epcTitle.textContent='EPC Düzenle'; setTab('epc');} if(del){if(!confirm('EPC silinsin mi?')) return; const keys=state.projeler.filter(p=>p.epc_key===del).map(p=>p.proje_key); state.epcler=state.epcler.filter(x=>x.epc_key!==del); state.projeler=state.projeler.filter(x=>x.epc_key!==del); state.activities=state.activities.filter(a=>!keys.includes(a.proje_key)); state.tasks=state.tasks.filter(t=>!keys.includes(t.proje_key)); save(); renderAll();}});
+  el.projectTable.querySelector('tbody').addEventListener('click',ev=>{const edit=ev.target.closest('[data-projedit]')?.dataset.projedit; const del=ev.target.closest('[data-projdel]')?.dataset.projdel; if(edit){const p=state.projeler.find(x=>x.proje_key===edit); if(!p) return; el.projectEditKey.value=p.proje_key; el.projEpcKey.value=p.epc_key; el.projAdi.value=p.projeAdi; el.projTuru.value=p.projeTuru||''; el.projGuc.value=p.gucKw; el.projPanel.value=p.panelGucuW||595; el.projAsama.value=p.asama; el.projOlasilik.value=p.olasilik; el.projAy.value=p.tahminiBaslamaAyi; el.projTemas.value=p.sonTemasTarihi||''; el.projAksiyon.value=p.birSonrakiAksiyon||''; el.projSorumlu.value=p.sorumlu||''; el.projNotlar.value=p.notlar||''; el.projOwner.value=p.owner||''; el.projEtiket.value=p.etiketler.join(', '); el.projTitle.textContent='Proje Düzenle'; setTab('projeler');} if(del){if(!confirm('Proje silinsin mi?')) return; state.projeler=state.projeler.filter(x=>x.proje_key!==del); state.activities=state.activities.filter(a=>a.proje_key!==del); state.tasks=state.tasks.filter(t=>t.proje_key!==del); selectedProjects.delete(del); save(); renderAll();}});
+  el.projectTable.querySelector('tbody').addEventListener('change',ev=>{const k=ev.target.dataset.sel; if(!k) return; ev.target.checked?selectedProjects.add(k):selectedProjects.delete(k);});
 
-  function applyDecision(c){
-    if(c.choice==='existing') return c.existing;
-    if(c.choice==='incoming') return c.incoming;
-    if(c.choice==='field'){
-      const out={...c.existing};
-      Object.keys(c.incoming).forEach(f=>{if(['epc_key','proje_key'].includes(f))return; const m=c.fieldChoices[f]||'existing'; if(m==='incoming') out[f]=c.incoming[f]; else if(m==='merge'&&['notlar','birSonrakiAksiyon'].includes(f)) out[f]=[c.existing[f],c.incoming[f]].filter(Boolean).join('\n---\n');});
-      return out;
-    }
-    return c.existing;
-  }
+  el.chkAll.addEventListener('change',()=>{filteredProjects().forEach(p=>el.chkAll.checked?selectedProjects.add(p.proje_key):selectedProjects.delete(p.proje_key)); renderProjects();});
+  el.bulkSelectAll.addEventListener('click',()=>{filteredProjects().forEach(p=>selectedProjects.add(p.proje_key)); renderProjects();});
+  el.bulkClear.addEventListener('click',()=>{selectedProjects.clear(); renderProjects();});
+  el.bulkApply.addEventListener('click',()=>{if(!el.bulkStage.value) return; state.projeler=state.projeler.map(p=>selectedProjects.has(p.proje_key)?({...p,asama:el.bulkStage.value,olasilik:el.autoProb.checked?STAGES[el.bulkStage.value]:p.olasilik,updated_at:nowIso()}):p); save(); renderAll();});
+  el.bulkDelete.addEventListener('click',()=>{if(!selectedProjects.size||!confirm('Seçililer silinsin mi?')) return; state.projeler=state.projeler.filter(p=>!selectedProjects.has(p.proje_key)); state.activities=state.activities.filter(a=>!selectedProjects.has(a.proje_key)); state.tasks=state.tasks.filter(t=>!selectedProjects.has(t.proje_key)); selectedProjects.clear(); save(); renderAll();});
+  [el.fltSearch,el.fltStage,el.fltResp,el.fltTag].forEach(n=>n.addEventListener('input',renderProjects)); el.fltClear.addEventListener('click',()=>{el.fltSearch.value='';el.fltStage.value='';el.fltResp.value='';el.fltTag.value='';renderProjects();});
 
-  function applyMerge(){
-    if(imp.decisions.some(c=>c.choice==='ask')) return alert('Lütfen tüm çakışmalar için seçim yapın.');
-    let added=0,updated=0;
-    imp.pending.addE.forEach(x=>{state.epcler.push(x);added++;});
-    imp.pending.addP.forEach(x=>{state.projeler.push(x);added++;});
-    imp.decisions.forEach(c=>{const res=applyDecision(c); if(c.type==='EPC'){const i=state.epcler.findIndex(x=>x.epc_key===c.key); if(i>=0&&JSON.stringify(state.epcler[i])!==JSON.stringify(res)){state.epcler[i]=res;updated++;}} else {const i=state.projeler.findIndex(x=>x.proje_key===c.key); if(i>=0&&JSON.stringify(state.projeler[i])!==JSON.stringify(res)){state.projeler[i]=res;updated++;}}});
-    state.lastImportSummary={added,updated,conflicts:imp.decisions.length}; save(); closeConf(); renderAll(); alert('İçe aktarma tamamlandı.');
-  }
+  el.kanban.addEventListener('dragstart',ev=>{const c=ev.target.closest('[data-drag]'); if(c) ev.dataTransfer.setData('text/plain',c.dataset.drag);});
+  el.kanban.addEventListener('dragover',ev=>{const col=ev.target.closest('[data-stage]'); if(col){ev.preventDefault(); col.classList.add('kdrop');}});
+  el.kanban.addEventListener('dragleave',ev=>{const col=ev.target.closest('[data-stage]'); if(col) col.classList.remove('kdrop');});
+  el.kanban.addEventListener('drop',ev=>{const col=ev.target.closest('[data-stage]'); if(!col) return; ev.preventDefault(); col.classList.remove('kdrop'); const key=ev.dataTransfer.getData('text/plain'); const i=state.projeler.findIndex(p=>p.proje_key===key); if(i<0) return; state.projeler[i].asama=col.dataset.stage; if(el.autoProb.checked) state.projeler[i].olasilik=STAGES[col.dataset.stage]; state.projeler[i].updated_at=nowIso(); save(); renderAll();});
 
-  function openConf(){document.getElementById('confModal').classList.remove('hidden');}
-  function closeConf(){document.getElementById('confModal').classList.add('hidden'); imp.pending=null; imp.decisions=[]; document.getElementById('confirmSuggested').disabled=true;}
+  el.activityForm.addEventListener('submit',ev=>{ev.preventDefault(); if(!el.actDate.value||!el.actText.value.trim()) return; state.activities.push({proje_key:el.actProje.value,date:el.actDate.value,type:el.actType.value,text:el.actText.value.trim(),created:nowIso()}); save(); el.activityForm.reset(); el.actDate.value=today(); renderActivities();});
+  el.taskForm.addEventListener('submit',ev=>{ev.preventDefault(); if(!el.taskTitle.value.trim()||!el.taskDue.value) return; state.tasks.push({proje_key:el.taskProje.value,title:el.taskTitle.value.trim(),due:el.taskDue.value,priority:el.taskPriority.value,done:false,created:nowIso()}); save(); el.taskForm.reset(); renderAll();});
+  el.taskTable.querySelector('tbody').addEventListener('change',ev=>{const i=ev.target.dataset.taskdone; if(i===undefined) return; state.tasks[Number(i)].done=ev.target.checked; save(); renderAll();});
+  el.taskTable.querySelector('tbody').addEventListener('click',ev=>{const i=ev.target.dataset.taskdel; if(i===undefined) return; state.tasks.splice(Number(i),1); save(); renderAll();});
 
-  document.querySelectorAll('.tab-btn').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
-  document.getElementById('themeToggle').onclick=()=>setTheme(state.theme==='dark'?'light':'dark');
+  el.expEpc.addEventListener('click',()=>download('epc.csv',toCsv(state.epcler,EPC_COLUMNS)));
+  el.expProj.addEventListener('click',()=>download('projeler.csv',toCsv(state.projeler,PROJ_COLUMNS)));
 
-  document.getElementById('projAsama').addEventListener('change',()=>{if(document.getElementById('autoProb').checked) document.getElementById('projOlasilik').value=STAGES[document.getElementById('projAsama').value]||0;});
-  document.getElementById('autoProb').addEventListener('change',()=>{if(document.getElementById('autoProb').checked) document.getElementById('projOlasilik').value=STAGES[document.getElementById('projAsama').value]||0;});
+  el.startImport.addEventListener('click',async()=>{const ef=el.impEpc.files[0],pf=el.impProj.files[0]; if(!ef||!pf) return alert('Lütfen iki dosya seçin.'); const [et,pt]=await Promise.all([ef.text(),pf.text()]); const inE=parseCsv(et).map(sanitizeEpc).filter(Boolean); const inP=parseCsv(pt).map(r=>sanitizeProject({...r,etiketler:String(r.etiketler||'').split('|')})).filter(Boolean); imp.pending=buildConflicts(inE,inP); imp.decisions=imp.pending.conf; const mode=el.confDefault.value; if(mode!=='ask') imp.decisions.forEach(c=>c.choice=mode==='newer'?chooseSuggested(c.existing,c.incoming):mode); if(!imp.decisions.length){imp.pending.addE.forEach(x=>state.epcler.push(x)); imp.pending.addP.forEach(x=>state.projeler.push(x)); state.lastImportSummary={added:imp.pending.addE.length+imp.pending.addP.length,updated:0,conflicts:0}; save(); renderAll(); return alert('Çakışma yok, içe aktarma tamamlandı.');} renderConflicts(); openConf();});
+  el.applySuggested.addEventListener('click',()=>{imp.decisions.forEach(c=>c.choice=chooseSuggested(c.existing,c.incoming)); el.confirmSuggested.disabled=false; renderConflicts();});
+  el.confirmSuggested.addEventListener('click',()=>{if(confirm('Toplu öneri uygulansın mı?')) applyMerge();});
+  el.cancelConf.addEventListener('click',closeConf); el.applyConf.addEventListener('click',applyMerge);
 
-  document.getElementById('epcForm').addEventListener('click',e=>{const b=e.target.closest('[data-action]'); if(b) document.getElementById('epcAction').value=b.dataset.action;});
-  document.getElementById('projectForm').addEventListener('click',e=>{const b=e.target.closest('[data-action]'); if(b) document.getElementById('projectAction').value=b.dataset.action;});
+  el.epcReset.addEventListener('click',resetEpc); el.projReset.addEventListener('click',resetProj);
 
-  document.getElementById('epcForm').onsubmit=(e)=>{
-    e.preventDefault();
-    const action=document.getElementById('epcAction').value, edit=document.getElementById('epcEditKey').value;
-    const rec=sanitizeEpc({firmaAdi:epcFirmaAdi.value,sehir:epcSehir.value,yetkiliKisi:epcYetkiliKisi.value,telefon:epcTelefon.value,email:epcEmail.value,notlar:epcNotlar.value,owner:epcOwner.value,updated_at:nowIso()});
-    if(!rec) return alert('Firma Adı ve Şehir zorunludur.');
-    if(action==='new'||!edit){ if(state.epcler.some(x=>x.epc_key===rec.epc_key)) return alert('Bu EPC zaten mevcut.'); state.epcler.push(rec); }
-    else {
-      const idx=state.epcler.findIndex(x=>x.epc_key===edit); if(idx<0) return;
-      if(rec.epc_key!==edit && state.epcler.some(x=>x.epc_key===rec.epc_key)) return alert('Yeni anahtar başka EPC ile çakışıyor.');
-      state.epcler[idx]=rec;
-      if(edit!==rec.epc_key) state.projeler=state.projeler.map(p=>({...p,epc_key:p.epc_key===edit?rec.epc_key:p.epc_key,proje_key:p.epc_key===edit?makeProjeKey(rec.epc_key,p.projeAdi,p.gucKw,p.tahminiBaslamaAyi):p.proje_key}));
-    }
-    save(); resetEpc(); renderAll();
-  };
-
-  document.getElementById('projectForm').onsubmit=(e)=>{
-    e.preventDefault();
-    const action=document.getElementById('projectAction').value, edit=document.getElementById('projectEditKey').value;
-    const rec=sanitizeProject({epc_key:projEpcKey.value,projeAdi:projAdi.value,gucKw:Number(projGucKw.value),panelGucuW:Number(projPanelW.value||595),asama:projAsama.value,olasilik:Number(projOlasilik.value),tahminiBaslamaAyi:projAy.value,sonTemasTarihi:projTemas.value,birSonrakiAksiyon:projAksiyon.value,sorumlu:projSorumlu.value,notlar:projNotlar.value,owner:projOwner.value,projeTuru:projTuru.value,etiketler:projTags.value.split(',').map(x=>x.trim()).filter(Boolean),updated_at:nowIso()});
-    if(!rec) return alert('Proje Adı + Güç (kW) + Tahmini Başlama Ayı zorunlu.');
-    if(action==='new'||!edit){ if(state.projeler.some(x=>x.proje_key===rec.proje_key)) return alert('Bu proje zaten mevcut.'); state.projeler.push(rec); }
-    else {
-      const idx=state.projeler.findIndex(x=>x.proje_key===edit); if(idx<0) return;
-      if(rec.proje_key!==edit && state.projeler.some(x=>x.proje_key===rec.proje_key)) return alert('Yeni anahtar mevcut projeyle çakışıyor.');
-      state.projeler[idx]=rec;
-      state.activities=state.activities.map(a=>({...a,proje_key:a.proje_key===edit?rec.proje_key:a.proje_key}));
-      state.tasks=state.tasks.map(t=>({...t,proje_key:t.proje_key===edit?rec.proje_key:t.proje_key}));
-    }
-    save(); resetProj(); renderAll();
-  };
-
-  document.querySelector('#epcTable tbody').addEventListener('click',e=>{
-    const edit=e.target.closest('[data-epcedit]')?.dataset.epcedit;
-    const del=e.target.closest('[data-epcdel]')?.dataset.epcdel;
-    if(edit){const r=state.epcler.find(x=>x.epc_key===edit); if(!r) return; epcEditKey.value=r.epc_key; epcFirmaAdi.value=r.firmaAdi; epcSehir.value=r.sehir; epcYetkiliKisi.value=r.yetkiliKisi||''; epcTelefon.value=r.telefon||''; epcEmail.value=r.email||''; epcNotlar.value=r.notlar||''; epcOwner.value=r.owner||''; epcUpdatedAt.value=r.updated_at||''; epcTitle.textContent='EPC Düzenle'; setTab('epc');}
-    if(del){if(!confirm('EPC silinsin mi? Bağlı projeler de silinecek.')) return; state.epcler=state.epcler.filter(x=>x.epc_key!==del); const projKeys=state.projeler.filter(p=>p.epc_key===del).map(p=>p.proje_key); state.projeler=state.projeler.filter(p=>p.epc_key!==del); state.activities=state.activities.filter(a=>!projKeys.includes(a.proje_key)); state.tasks=state.tasks.filter(t=>!projKeys.includes(t.proje_key)); save(); renderAll();}
-  });
-
-  document.querySelector('#projectTable tbody').addEventListener('click',e=>{
-    const edit=e.target.closest('[data-projedit]')?.dataset.projedit;
-    const del=e.target.closest('[data-projdel]')?.dataset.projdel;
-    if(edit){const p=state.projeler.find(x=>x.proje_key===edit); if(!p) return; projectEditKey.value=p.proje_key; projEpcKey.value=p.epc_key; projAdi.value=p.projeAdi; projTuru.value=p.projeTuru||''; projGucKw.value=p.gucKw; projPanelW.value=p.panelGucuW||595; projAsama.value=p.asama; projOlasilik.value=p.olasilik; projAy.value=p.tahminiBaslamaAyi; projTemas.value=p.sonTemasTarihi||''; projAksiyon.value=p.birSonrakiAksiyon||''; projSorumlu.value=p.sorumlu||''; projNotlar.value=p.notlar||''; projOwner.value=p.owner||''; projTags.value=(p.etiketler||[]).join(', '); projTitle.textContent='Proje Düzenle'; setTab('projeler');}
-    if(del){if(!confirm('Proje silinsin mi?')) return; state.projeler=state.projeler.filter(x=>x.proje_key!==del); state.activities=state.activities.filter(a=>a.proje_key!==del); state.tasks=state.tasks.filter(t=>t.proje_key!==del); selectedProjects.delete(del); save(); renderAll();}
-  });
-
-  document.querySelector('#projectTable tbody').addEventListener('change',e=>{if(e.target.dataset.sel){e.target.checked?selectedProjects.add(e.target.dataset.sel):selectedProjects.delete(e.target.dataset.sel);}});
-  chkAll.onchange=()=>{filteredProjects().forEach(p=>chkAll.checked?selectedProjects.add(p.proje_key):selectedProjects.delete(p.proje_key)); renderProjects();};
-  bulkSelectAll.onclick=()=>{filteredProjects().forEach(p=>selectedProjects.add(p.proje_key)); renderProjects();};
-  bulkClear.onclick=()=>{selectedProjects.clear(); renderProjects();};
-  bulkApplyStage.onclick=()=>{if(!bulkStage.value) return; state.projeler=state.projeler.map(p=>selectedProjects.has(p.proje_key)?({...p,asama:bulkStage.value,olasilik:document.getElementById('autoProb').checked?STAGES[bulkStage.value]:p.olasilik,updated_at:nowIso()}):p); save(); renderAll();};
-  bulkDelete.onclick=()=>{if(!selectedProjects.size||!confirm('Seçili projeler silinsin mi?')) return; state.projeler=state.projeler.filter(p=>!selectedProjects.has(p.proje_key)); state.activities=state.activities.filter(a=>!selectedProjects.has(a.proje_key)); state.tasks=state.tasks.filter(t=>!selectedProjects.has(t.proje_key)); selectedProjects.clear(); save(); renderAll();};
-  [fltSearch,fltStage,fltResp,fltTag].forEach(el=>el.addEventListener('input',renderProjects));
-  fltClear.onclick=()=>{fltSearch.value='';fltStage.value='';fltResp.value='';fltTag.value='';renderProjects();};
-
-  document.getElementById('kanban').addEventListener('dragstart',e=>{const c=e.target.closest('[data-drag]'); if(c)e.dataTransfer.setData('text/plain',c.dataset.drag);});
-  document.getElementById('kanban').addEventListener('dragover',e=>{const col=e.target.closest('[data-stage]'); if(col){e.preventDefault(); col.classList.add('kdrop');}});
-  document.getElementById('kanban').addEventListener('dragleave',e=>{const col=e.target.closest('[data-stage]'); if(col) col.classList.remove('kdrop');});
-  document.getElementById('kanban').addEventListener('drop',e=>{const col=e.target.closest('[data-stage]'); if(!col) return; e.preventDefault(); col.classList.remove('kdrop'); const key=e.dataTransfer.getData('text/plain'); const idx=state.projeler.findIndex(p=>p.proje_key===key); if(idx<0) return; state.projeler[idx].asama=col.dataset.stage; if(document.getElementById('autoProb').checked) state.projeler[idx].olasilik=STAGES[col.dataset.stage]; state.projeler[idx].updated_at=nowIso(); save(); renderAll();});
-
-  activityForm.onsubmit=(e)=>{e.preventDefault(); if(!actDate.value||!actText.value.trim()) return; state.activities.push({proje_key:actProje.value,date:actDate.value,type:actType.value,text:actText.value.trim(),created:nowIso()}); save(); activityForm.reset(); actDate.value=today(); renderActivities();};
-  taskForm.onsubmit=(e)=>{e.preventDefault(); if(!taskTitle.value.trim()||!taskDue.value) return; state.tasks.push({proje_key:taskProje.value,title:taskTitle.value.trim(),due:taskDue.value,priority:taskPriority.value,done:false,created:nowIso()}); save(); taskForm.reset(); renderAll();};
-  document.querySelector('#taskTable tbody').addEventListener('change',e=>{const i=e.target.dataset.taskdone; if(i===undefined) return; state.tasks[Number(i)].done=e.target.checked; save(); renderAll();});
-  document.querySelector('#taskTable tbody').addEventListener('click',e=>{const i=e.target.dataset.taskdel; if(i===undefined) return; state.tasks.splice(Number(i),1); save(); renderAll();});
-
-  expEpc.onclick=()=>download('epc.csv',toCsv(state.epcler,EPC_COLUMNS));
-  expProj.onclick=()=>download('projeler.csv',toCsv(state.projeler,PROJ_COLUMNS));
-
-  startImport.onclick=async()=>{
-    const ef=impEpc.files[0], pf=impProj.files[0]; if(!ef||!pf) return alert('Lütfen iki dosyayı da seçin.');
-    const [et,pt]=await Promise.all([ef.text(),pf.text()]);
-    const inE=parseCsv(et).map(sanitizeEpc).filter(Boolean);
-    const inP=parseCsv(pt).map(r=>sanitizeProject({...r,etiketler:String(r.etiketler||'').split('|')})).filter(Boolean);
-    imp.pending=buildConflicts(inE,inP); imp.decisions=imp.pending.conf;
-    const mode=confDefault.value;
-    if(mode!=='ask') imp.decisions.forEach(c=>c.choice=mode==='newer'?chooseSuggested(c.existing,c.incoming):mode);
-    if(!imp.decisions.length){imp.pending.addE.forEach(x=>state.epcler.push(x)); imp.pending.addP.forEach(x=>state.projeler.push(x)); state.lastImportSummary={added:imp.pending.addE.length+imp.pending.addP.length,updated:0,conflicts:0}; save(); renderAll(); return alert('Çakışma yok, içe aktarma tamamlandı.');}
-    renderConflicts(); openConf();
-  };
-
-  applySuggested.onclick=()=>{imp.decisions.forEach(c=>c.choice=chooseSuggested(c.existing,c.incoming)); confirmSuggested.disabled=false; renderConflicts();};
-  confirmSuggested.onclick=()=>{if(confirm('Toplu öneri uygulansın mı?')) applyMerge();};
-  cancelConf.onclick=closeConf;
-  applyConf.onclick=applyMerge;
-
-  epcReset.onclick=resetEpc; projReset.onclick=resetProj;
-
-  function renderImportSummary(){
-    const card=document.getElementById('importSummaryCard'); const out=document.getElementById('importSummary');
-    if(!state.lastImportSummary){card.classList.add('hidden');out.innerHTML='';return;}
-    card.classList.remove('hidden'); const s=state.lastImportSummary;
-    out.innerHTML=`<div class="grid"><div class="col-4 stat"><div class="l">Eklenen</div><div class="v">${s.added}</div></div><div class="col-4 stat"><div class="l">Güncellenen</div><div class="v">${s.updated}</div></div><div class="col-4 stat"><div class="l">Çakışma Çözülen</div><div class="v">${s.conflicts}</div></div></div>`;
-  }
-
-  setTheme(state.theme||'light');
-  renderOptions();
-  resetEpc(); resetProj();
-  actDate.value=today();
-  renderAll();
+  setTheme(state.theme); renderOptions(); resetEpc(); resetProj(); el.actDate.value=today(); renderAll();
 })();
 </script>
 </body>
