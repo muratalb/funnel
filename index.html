@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini CRM (EPC + Proje Pipeline)</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #d2d2d7;
+      --accent: #0071e3;
+      --accent-soft: #e8f2ff;
+      --danger: #d70015;
+      --success: #177245;
+      --radius: 14px;
+      --shadow: 0 6px 24px rgba(0,0,0,0.06);
+      --gap: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    h1 { margin: 0; font-size: 1.55rem; letter-spacing: -0.015em; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: #c4ddff; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid #ececf0;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(12, minmax(0,1fr));
+    }
+
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+
+    @media (max-width: 980px) {
+      .col-3,.col-4,.col-6,.col-8 { grid-column: span 12; }
+    }
+
+    label { font-size: .84rem; color: var(--muted); display: block; margin-bottom: 6px; }
+    input, textarea, select, button {
+      font: inherit;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px 11px;
+      color: var(--text);
+    }
+
+    textarea { min-height: 88px; resize: vertical; }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 10px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn.primary { background: var(--accent); color: #fff; border-color: #0063c8; }
+    .btn.danger { color: #fff; background: var(--danger); border-color: #b50011; }
+    .btn.ghost { background: transparent; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .92rem;
+    }
+    th, td {
+      border-bottom: 1px solid #ececf0;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-weight: 600; font-size: .81rem; }
+
+    .muted { color: var(--muted); }
+    .hidden { display: none !important; }
+
+    .stat {
+      padding: 12px;
+      border: 1px solid #ececf0;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .stat .label { font-size: .79rem; color: var(--muted); }
+    .stat .value { font-size: 1.4rem; font-weight: 700; margin-top: 4px; }
+
+    .badge { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: .78rem; border: 1px solid #dbe9ff; color: #0059b3; background: #eef5ff; }
+
+    .hint { font-size: .8rem; color: var(--muted); }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 20;
+    }
+    .modal {
+      width: min(1200px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.22);
+      padding: 16px;
+    }
+
+    .conflict-row {
+      border: 1px solid #ececf0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .side {
+      border: 1px solid #ececf0;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fafafb;
+    }
+
+    .field-pick {
+      display: grid;
+      grid-template-columns: 180px 1fr 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    @media (max-width:900px){
+      .field-pick{ grid-template-columns: 1fr; }
+    }
+
+    .footer-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+
+    .pill {
+      border: 1px solid #ececf0;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: .78rem;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1>Mini CRM</h1>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="tab-btn" data-tab="epc">EPC</button>
+        <button class="tab-btn" data-tab="projeler">Projeler</button>
+        <button class="tab-btn" data-tab="veri">Veri (CSV)</button>
+      </div>
+    </div>
+
+    <section id="tab-dashboard">
+      <div class="grid" id="dashboardStats"></div>
+      <div class="card">
+        <h3>Aşama Dağılımı</h3>
+        <div id="stageBreakdown" class="grid"></div>
+      </div>
+    </section>
+
+    <section id="tab-epc" class="hidden">
+      <div class="card">
+        <h3 id="epcFormTitle">EPC Ekle</h3>
+        <form id="epcForm" class="grid">
+          <input type="hidden" id="epcEditKey" />
+          <div class="col-4">
+            <label>Firma Adı *</label>
+            <input id="epcFirmaAdi" required />
+          </div>
+          <div class="col-4">
+            <label>Şehir *</label>
+            <input id="epcSehir" required />
+          </div>
+          <div class="col-4">
+            <label>Yetkili Kişi</label>
+            <input id="epcYetkiliKisi" />
+          </div>
+          <div class="col-3"><label>Telefon</label><input id="epcTelefon" /></div>
+          <div class="col-3"><label>Email</label><input id="epcEmail" type="email" /></div>
+          <div class="col-3"><label>Owner</label><input id="epcOwner" /></div>
+          <div class="col-3"><label>Son Güncelleme</label><input id="epcUpdatedAt" placeholder="otomatik" disabled /></div>
+          <div class="col-12"><label>Notlar</label><textarea id="epcNotlar"></textarea></div>
+          <div class="col-12 actions">
+            <button class="btn primary" type="submit">Kaydet</button>
+            <button class="btn" type="button" id="epcFormReset">Temizle</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>EPC Listesi</h3>
+        <table id="epcTable">
+          <thead>
+            <tr>
+              <th>Firma</th><th>Şehir</th><th>Yetkili</th><th>Telefon</th><th>Email</th><th>Owner</th><th>updated_at</th><th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-projeler" class="hidden">
+      <div class="card">
+        <h3 id="projectFormTitle">Proje Ekle</h3>
+        <form id="projectForm" class="grid">
+          <input type="hidden" id="projectEditKey" />
+          <div class="col-6">
+            <label>Bağlı EPC *</label>
+            <select id="projEpcKey" required></select>
+          </div>
+          <div class="col-6">
+            <label>Proje Adı *</label>
+            <input id="projAdi" required />
+            <div class="hint">Önerilen format: <b>Müşteri/Proje – İlçe/Şehir – xxx kW – Tip</b></div>
+          </div>
+          <div class="col-3"><label>Proje Türü</label><input id="projTuru" /></div>
+          <div class="col-3"><label>Güç (kW) *</label><input id="projGucKw" type="number" min="0" step="0.01" required /></div>
+          <div class="col-3"><label>Panel Gücü (W)</label><input id="projPanelGucuW" type="number" min="1" value="595" /></div>
+          <div class="col-3">
+            <label>Aşama</label>
+            <select id="projAsama"></select>
+          </div>
+          <div class="col-3"><label>Olasılık (%)</label><input id="projOlasilik" disabled /></div>
+          <div class="col-3"><label>Tahmini Başlama Ayı (YYYY-MM) *</label><input id="projTahminiAyi" type="month" required /></div>
+          <div class="col-3"><label>Son Temas Tarihi</label><input id="projSonTemas" type="date" /></div>
+          <div class="col-3">
+            <label>Sorumlu</label>
+            <select id="projSorumlu">
+              <option value="">Seçiniz</option><option>Murat</option><option>Hüseyin</option><option>Buse</option>
+            </select>
+          </div>
+          <div class="col-3"><label>Owner</label><input id="projOwner" /></div>
+          <div class="col-6"><label>Bir Sonraki Aksiyon</label><textarea id="projAksiyon"></textarea></div>
+          <div class="col-6"><label>Notlar</label><textarea id="projNotlar"></textarea></div>
+          <div class="col-12 actions">
+            <button class="btn primary" type="submit">Kaydet</button>
+            <button class="btn" type="button" id="projectFormReset">Temizle</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Proje Pipeline</h3>
+        <table id="projectTable">
+          <thead>
+            <tr>
+              <th>Proje</th><th>EPC</th><th>Aşama</th><th>kW</th><th>Panel</th><th>Ağırlıklı Panel</th><th>Başlama</th><th>Sorumlu</th><th>updated_at</th><th>İşlem</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-veri" class="hidden">
+      <div class="card">
+        <h3>CSV Dışa Aktar</h3>
+        <div class="actions">
+          <button class="btn primary" id="exportEpcBtn">epc.csv indir</button>
+          <button class="btn primary" id="exportProjBtn">projeler.csv indir</button>
+        </div>
+        <div class="footer-note">Excel uyumluluğu için UTF-8 BOM ile üretilir.</div>
+      </div>
+      <div class="card">
+        <h3>CSV İçe Aktar (Merge)</h3>
+        <div class="grid">
+          <div class="col-6"><label>epc.csv</label><input type="file" id="importEpcFile" accept=".csv" /></div>
+          <div class="col-6"><label>projeler.csv</label><input type="file" id="importProjFile" accept=".csv" /></div>
+          <div class="col-12 actions"><button class="btn" id="startImportBtn">İçe Aktarmayı Başlat</button></div>
+        </div>
+        <div class="footer-note">Merge varsayılanı: veri üzerine yazılmaz, sadece yeni eklenir / çakışma çözümlenir.</div>
+      </div>
+      <div class="card hidden" id="importSummaryCard">
+        <h3>Son İçe Aktarım Özeti</h3>
+        <div id="importSummary"></div>
+      </div>
+
+      <div class="card">
+        <h3>Kısa Kullanım</h3>
+        <ol>
+          <li>Önce EPC kaydı oluşturun (Firma Adı + Şehir zorunlu).</li>
+          <li>Sonra proje ekleyin (Proje Adı + Güç + Tahmini Başlama Ayı zorunlu).</li>
+          <li>Dashboard ekranından toplamlar ve aşama kırılımını takip edin.</li>
+          <li>CSV dışa aktarım ve içe aktarım ile ekipler arası veri birleştirin.</li>
+        </ol>
+      </div>
+    </section>
+  </div>
+
+  <div id="conflictModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h2>Çakışmalar</h2>
+      <p class="muted">Çakışma bulunan kayıtlar için karar verin. Varsayılan öneri: updated_at daha yeni olan.</p>
+      <div class="actions" style="margin-bottom:10px;">
+        <button class="btn" id="applySuggestedBtn">Varsayılan öneriyi uygula (updated_at yeni olan)</button>
+        <button class="btn danger" id="confirmSuggestedBtn" disabled>Toplu Kararı Onayla</button>
+      </div>
+      <div id="conflictList"></div>
+      <div class="actions">
+        <button class="btn ghost" id="cancelImportBtn">İptal</button>
+        <button class="btn primary" id="applyMergeBtn">Kararları Uygula</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'mini_crm_v1';
+      const STAGES = {
+        'İlk Temas': 10,
+        'Qualified': 25,
+        'Teklif Verildi': 40,
+        'Deneme Konuşuldu': 50,
+        'Sözlü Onay': 70,
+        'Sipariş Alındı': 100,
+        'Kaybedildi': 0,
+      };
+
+      const EPC_COLUMNS = ['epc_key','firmaAdi','sehir','yetkiliKisi','telefon','email','notlar','owner','updated_at'];
+      const PROJ_COLUMNS = ['proje_key','epc_key','projeAdi','projeTuru','gucKw','panelGucuW','asama','olasilik','tahminiBaslamaAyi','sonTemasTarihi','birSonrakiAksiyon','sorumlu','notlar','owner','updated_at'];
+
+      const state = loadState();
+      const importContext = { pending: null, decisions: [] };
+
+      function nowIso() { return new Date().toISOString(); }
+
+      function normalize(value) {
+        const map = { 'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'c','Ğ':'g','İ':'i','I':'i','Ö':'o','Ş':'s','Ü':'u' };
+        return (value || '')
+          .split('')
+          .map(ch => map[ch] || ch)
+          .join('')
+          .toLowerCase()
+          .trim()
+          .replace(/[\p{P}\p{S}]+/gu, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function makeEpcKey(firmaAdi, sehir) {
+        return `${normalize(firmaAdi)}|${normalize(sehir)}`;
+      }
+
+      function makeProjeKey(epcKey, projeAdi, gucKw, ay) {
+        return `${epcKey}|${normalize(projeAdi)}|${String(gucKw)}|${ay}`;
+      }
+
+      function panelAdedi(gucKw, panelW) {
+        const g = Number(gucKw || 0); const p = Number(panelW || 595);
+        return Math.round((g * 1000) / p);
+      }
+      function agirlikliPanel(prj) {
+        return Math.round(panelAdedi(prj.gucKw, prj.panelGucuW) * Number(prj.olasilik || 0) / 100);
+      }
+
+      function loadState() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { epcler: [], projeler: [], lastImportSummary: null };
+        try {
+          const parsed = JSON.parse(raw);
+          parsed.epcler ||= [];
+          parsed.projeler ||= [];
+          return parsed;
+        } catch {
+          return { epcler: [], projeler: [], lastImportSummary: null };
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function esc(v) {
+        return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+      }
+
+      function setTab(name) {
+        ['dashboard','epc','projeler','veri'].forEach(t => {
+          document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== name);
+          const btn = document.querySelector(`.tab-btn[data-tab="${t}"]`);
+          btn.classList.toggle('active', t === name);
+        });
+      }
+
+      function renderAll() {
+        renderEpcOptions();
+        renderEpcTable();
+        renderProjectTable();
+        renderDashboard();
+        renderImportSummary();
+      }
+
+      function renderEpcOptions() {
+        const s = document.getElementById('projEpcKey');
+        const current = s.value;
+        s.innerHTML = '<option value="">EPC seçiniz</option>';
+        state.epcler.forEach(e => {
+          const o = document.createElement('option');
+          o.value = e.epc_key;
+          o.textContent = `${e.firmaAdi} (${e.sehir})`;
+          s.appendChild(o);
+        });
+        if ([...s.options].some(o => o.value === current)) s.value = current;
+      }
+
+      function renderEpcTable() {
+        const tbody = document.querySelector('#epcTable tbody');
+        tbody.innerHTML = state.epcler.map(e => `
+          <tr>
+            <td>${esc(e.firmaAdi)}</td><td>${esc(e.sehir)}</td><td>${esc(e.yetkiliKisi || '')}</td>
+            <td>${esc(e.telefon || '')}</td><td>${esc(e.email || '')}</td><td>${esc(e.owner || '')}</td>
+            <td><span class="pill">${esc(e.updated_at || '')}</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn" data-epc-edit="${esc(e.epc_key)}">Düzenle</button>
+                <button class="btn danger" data-epc-del="${esc(e.epc_key)}">Sil</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      function renderProjectTable() {
+        const tbody = document.querySelector('#projectTable tbody');
+        const epcMap = new Map(state.epcler.map(e => [e.epc_key, e]));
+        tbody.innerHTML = state.projeler.map(p => {
+          const epc = epcMap.get(p.epc_key);
+          return `
+          <tr>
+            <td>${esc(p.projeAdi)}</td>
+            <td>${esc(epc ? epc.firmaAdi + ' / ' + epc.sehir : p.epc_key)}</td>
+            <td><span class="badge">${esc(p.asama)}</span></td>
+            <td>${esc(p.gucKw)}</td>
+            <td>${panelAdedi(p.gucKw, p.panelGucuW)}</td>
+            <td>${agirlikliPanel(p)}</td>
+            <td>${esc(p.tahminiBaslamaAyi)}</td>
+            <td>${esc(p.sorumlu || '')}</td>
+            <td><span class="pill">${esc(p.updated_at || '')}</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn" data-proj-edit="${esc(p.proje_key)}">Düzenle</button>
+                <button class="btn danger" data-proj-del="${esc(p.proje_key)}">Sil</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        }).join('');
+      }
+
+      function renderDashboard() {
+        const ds = document.getElementById('dashboardStats');
+        const toplamEpc = state.epcler.length;
+        const toplamProje = state.projeler.length;
+        const toplamKW = state.projeler.reduce((a, p) => a + Number(p.gucKw || 0), 0);
+        const toplamPanel = state.projeler.reduce((a, p) => a + panelAdedi(p.gucKw, p.panelGucuW), 0);
+        const agirlikli = state.projeler.reduce((a, p) => a + agirlikliPanel(p), 0);
+        ds.innerHTML = `
+          <div class="col-3 stat"><div class="label">Toplam EPC</div><div class="value">${toplamEpc}</div></div>
+          <div class="col-3 stat"><div class="label">Toplam Proje</div><div class="value">${toplamProje}</div></div>
+          <div class="col-3 stat"><div class="label">Toplam Güç (kW)</div><div class="value">${Math.round(toplamKW*100)/100}</div></div>
+          <div class="col-3 stat"><div class="label">Toplam Panel</div><div class="value">${toplamPanel}</div></div>
+          <div class="col-3 stat"><div class="label">Ağırlıklı Panel</div><div class="value">${agirlikli}</div></div>
+        `;
+
+        const breakdown = {};
+        Object.keys(STAGES).forEach(s => breakdown[s] = { adet: 0, kw: 0 });
+        state.projeler.forEach(p => {
+          const b = breakdown[p.asama] || (breakdown[p.asama] = { adet: 0, kw: 0 });
+          b.adet += 1;
+          b.kw += Number(p.gucKw || 0);
+        });
+
+        document.getElementById('stageBreakdown').innerHTML = Object.entries(breakdown).map(([k,v]) => `
+          <div class="col-3 stat"><div class="label">${esc(k)}</div><div class="value">${v.adet}</div><div class="muted">${Math.round(v.kw*100)/100} kW</div></div>
+        `).join('');
+      }
+
+      function renderImportSummary() {
+        const c = document.getElementById('importSummaryCard');
+        const out = document.getElementById('importSummary');
+        if (!state.lastImportSummary) {
+          c.classList.add('hidden');
+          out.innerHTML = '';
+          return;
+        }
+        c.classList.remove('hidden');
+        const s = state.lastImportSummary;
+        out.innerHTML = `
+          <div class="grid">
+            <div class="col-4 stat"><div class="label">Eklenen</div><div class="value">${s.added}</div></div>
+            <div class="col-4 stat"><div class="label">Güncellenen</div><div class="value">${s.updated}</div></div>
+            <div class="col-4 stat"><div class="label">Çözülen Çakışma</div><div class="value">${s.conflicts}</div></div>
+          </div>
+        `;
+      }
+
+      function resetEpcForm() {
+        document.getElementById('epcForm').reset();
+        document.getElementById('epcEditKey').value = '';
+        document.getElementById('epcFormTitle').textContent = 'EPC Ekle';
+        document.getElementById('epcUpdatedAt').value = '';
+      }
+
+      function resetProjectForm() {
+        document.getElementById('projectForm').reset();
+        document.getElementById('projectEditKey').value = '';
+        document.getElementById('projectFormTitle').textContent = 'Proje Ekle';
+        document.getElementById('projPanelGucuW').value = '595';
+        document.getElementById('projAsama').value = 'İlk Temas';
+        document.getElementById('projOlasilik').value = STAGES['İlk Temas'];
+      }
+
+      function parseCsv(text) {
+        const rows = [];
+        let i = 0, cur = '', row = [], inQ = false;
+        if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+        while (i < text.length) {
+          const ch = text[i];
+          if (inQ) {
+            if (ch === '"' && text[i+1] === '"') { cur += '"'; i += 2; continue; }
+            if (ch === '"') { inQ = false; i++; continue; }
+            cur += ch; i++; continue;
+          }
+          if (ch === '"') { inQ = true; i++; continue; }
+          if (ch === ',') { row.push(cur); cur = ''; i++; continue; }
+          if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur=''; i++; continue; }
+          if (ch === '\r') { i++; continue; }
+          cur += ch; i++;
+        }
+        if (cur.length || row.length) { row.push(cur); rows.push(row); }
+        if (!rows.length) return [];
+        const header = rows[0].map(h => h.trim());
+        return rows.slice(1).filter(r => r.some(c => c !== '')).map(r => {
+          const obj = {};
+          header.forEach((h, idx) => obj[h] = r[idx] ?? '');
+          return obj;
+        });
+      }
+
+      function csvEscape(v) {
+        const s = String(v ?? '');
+        if (/[",\n]/.test(s)) return '"' + s.replaceAll('"', '""') + '"';
+        return s;
+      }
+
+      function toCsv(rows, columns) {
+        const lines = [columns.join(',')];
+        rows.forEach(r => lines.push(columns.map(c => csvEscape(r[c])).join(',')));
+        return '\uFEFF' + lines.join('\r\n');
+      }
+
+      function downloadCsv(filename, content) {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click();
+        a.remove(); URL.revokeObjectURL(url);
+      }
+
+      function sanitizeEpc(r) {
+        const firmaAdi = (r.firmaAdi || '').trim();
+        const sehir = (r.sehir || '').trim();
+        if (!firmaAdi || !sehir) return null;
+        const epc_key = makeEpcKey(firmaAdi, sehir);
+        return {
+          epc_key,
+          firmaAdi, sehir,
+          yetkiliKisi: r.yetkiliKisi || '',
+          telefon: r.telefon || '',
+          email: r.email || '',
+          notlar: r.notlar || '',
+          owner: r.owner || '',
+          updated_at: r.updated_at || nowIso(),
+        };
+      }
+
+      function sanitizeProject(r) {
+        const projeAdi = (r.projeAdi || '').trim();
+        const gucKw = Number(r.gucKw);
+        const ay = (r.tahminiBaslamaAyi || '').trim();
+        const epc_key = (r.epc_key || '').trim();
+        if (!epc_key || !projeAdi || !Number.isFinite(gucKw) || !/^\d{4}-\d{2}$/.test(ay)) return null;
+        const asama = STAGES[r.asama] !== undefined ? r.asama : 'İlk Temas';
+        const panelGucuW = Number(r.panelGucuW || 595) || 595;
+        return {
+          proje_key: makeProjeKey(epc_key, projeAdi, gucKw, ay),
+          epc_key,
+          projeAdi,
+          projeTuru: r.projeTuru || '',
+          gucKw,
+          panelGucuW,
+          asama,
+          olasilik: STAGES[asama],
+          tahminiBaslamaAyi: ay,
+          sonTemasTarihi: r.sonTemasTarihi || '',
+          birSonrakiAksiyon: r.birSonrakiAksiyon || '',
+          sorumlu: ['Murat','Hüseyin','Buse'].includes(r.sorumlu) ? r.sorumlu : '',
+          notlar: r.notlar || '',
+          owner: r.owner || '',
+          updated_at: r.updated_at || nowIso(),
+        };
+      }
+
+      function chooseSuggested(existing, incoming) {
+        const ex = Date.parse(existing.updated_at || '');
+        const inc = Date.parse(incoming.updated_at || '');
+        if (Number.isNaN(ex) && Number.isNaN(inc)) return 'existing';
+        if (Number.isNaN(ex)) return 'incoming';
+        if (Number.isNaN(inc)) return 'existing';
+        return inc > ex ? 'incoming' : 'existing';
+      }
+
+      function buildImportConflicts(incomingEpcs, incomingProjeler) {
+        const existingEpc = new Map(state.epcler.map(e => [e.epc_key, e]));
+        const existingProj = new Map(state.projeler.map(p => [p.proje_key, p]));
+        const addEpc = [], addProj = [], conflicts = [];
+
+        incomingEpcs.forEach(item => {
+          const ex = existingEpc.get(item.epc_key);
+          if (!ex) addEpc.push(item);
+          else conflicts.push({
+            type: 'EPC', key: item.epc_key, existing: ex, incoming: item,
+            choice: chooseSuggested(ex, item), fieldChoices: {}
+          });
+        });
+
+        incomingProjeler.forEach(item => {
+          const ex = existingProj.get(item.proje_key);
+          if (!ex) addProj.push(item);
+          else conflicts.push({
+            type: 'PROJE', key: item.proje_key, existing: ex, incoming: item,
+            choice: chooseSuggested(ex, item), fieldChoices: {}
+          });
+        });
+
+        return { addEpc, addProj, conflicts };
+      }
+
+      function createConflictUI() {
+        const list = document.getElementById('conflictList');
+        list.innerHTML = '';
+        importContext.decisions.forEach((c, i) => {
+          const wrap = document.createElement('div');
+          wrap.className = 'conflict-row';
+          const fields = Object.keys(c.incoming).filter(f => f !== 'epc_key' && f !== 'proje_key');
+          wrap.innerHTML = `
+            <div class="actions" style="justify-content:space-between;align-items:center;">
+              <div><b>${c.type}</b> <span class="muted">${esc(c.key)}</span></div>
+              <div class="actions">
+                <button class="btn" data-c-choice="existing" data-idx="${i}">Bendeki kalsın</button>
+                <button class="btn" data-c-choice="incoming" data-idx="${i}">Gelen kalsın</button>
+                <button class="btn" data-c-choice="field" data-idx="${i}">Alan alan seç</button>
+              </div>
+            </div>
+            <div class="grid" style="margin-top:10px;">
+              <div class="col-6 side"><b>Mevcut</b><pre>${esc(JSON.stringify(c.existing, null, 2))}</pre></div>
+              <div class="col-6 side"><b>Gelen</b><pre>${esc(JSON.stringify(c.incoming, null, 2))}</pre></div>
+            </div>
+            <div id="field-area-${i}" class="hidden" style="margin-top:10px;"></div>
+          `;
+          list.appendChild(wrap);
+
+          const fieldArea = wrap.querySelector(`#field-area-${i}`);
+          fieldArea.innerHTML = fields.map(f => {
+            const mergeAllowed = ['notlar','birSonrakiAksiyon'].includes(f);
+            return `
+              <div class="field-pick">
+                <div><b>${esc(f)}</b></div>
+                <label><input type="radio" name="pick-${i}-${f}" value="existing" ${!mergeAllowed ? 'checked' : ''}/> Mevcut</label>
+                <label><input type="radio" name="pick-${i}-${f}" value="incoming" ${mergeAllowed ? 'checked' : ''}/> Gelen</label>
+                ${mergeAllowed ? `<label><input type="radio" name="pick-${i}-${f}" value="merge"/> Birleştir (ekle)</label>` : '<span></span>'}
+              </div>
+            `;
+          }).join('');
+
+          wrap.addEventListener('change', (ev) => {
+            const t = ev.target;
+            if (t.name?.startsWith(`pick-${i}-`)) {
+              const field = t.name.replace(`pick-${i}-`, '');
+              c.choice = 'field';
+              c.fieldChoices[field] = t.value;
+            }
+          });
+        });
+
+        list.querySelectorAll('[data-c-choice]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const i = Number(btn.dataset.idx);
+            const mode = btn.dataset.cChoice;
+            const c = importContext.decisions[i];
+            c.choice = mode;
+            document.getElementById(`field-area-${i}`).classList.toggle('hidden', mode !== 'field');
+          });
+        });
+      }
+
+      function applyConflictDecision(c) {
+        if (c.choice === 'existing') return c.existing;
+        if (c.choice === 'incoming') return c.incoming;
+        const out = { ...c.existing };
+        Object.keys(c.incoming).forEach(f => {
+          if (f === 'epc_key' || f === 'proje_key') return;
+          const mode = c.fieldChoices[f] || 'existing';
+          if (mode === 'incoming') out[f] = c.incoming[f];
+          else if (mode === 'merge' && ['notlar','birSonrakiAksiyon'].includes(f)) {
+            out[f] = [c.existing[f], c.incoming[f]].filter(Boolean).join('\n---\n');
+          }
+        });
+        return out;
+      }
+
+      function runMergeApplication() {
+        const pending = importContext.pending;
+        if (!pending) return;
+        let added = 0, updated = 0;
+
+        pending.addEpc.forEach(e => { state.epcler.push(e); added++; });
+        pending.addProj.forEach(p => { state.projeler.push(p); added++; });
+
+        importContext.decisions.forEach(c => {
+          const result = applyConflictDecision(c);
+          if (c.type === 'EPC') {
+            const idx = state.epcler.findIndex(e => e.epc_key === c.key);
+            if (idx >= 0 && JSON.stringify(state.epcler[idx]) !== JSON.stringify(result)) {
+              state.epcler[idx] = result;
+              updated++;
+            }
+          } else {
+            const idx = state.projeler.findIndex(p => p.proje_key === c.key);
+            if (idx >= 0 && JSON.stringify(state.projeler[idx]) !== JSON.stringify(result)) {
+              state.projeler[idx] = result;
+              updated++;
+            }
+          }
+        });
+
+        state.lastImportSummary = { added, updated, conflicts: importContext.decisions.length };
+        saveState();
+        closeConflictModal();
+        renderAll();
+        alert('İçe aktarma ve merge tamamlandı.');
+      }
+
+      function openConflictModal() {
+        document.getElementById('conflictModal').classList.remove('hidden');
+      }
+      function closeConflictModal() {
+        document.getElementById('conflictModal').classList.add('hidden');
+        importContext.pending = null;
+        importContext.decisions = [];
+        document.getElementById('confirmSuggestedBtn').disabled = true;
+      }
+
+      function init() {
+        const asama = document.getElementById('projAsama');
+        Object.keys(STAGES).forEach(k => {
+          const o = document.createElement('option');
+          o.value = k; o.textContent = k;
+          asama.appendChild(o);
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => setTab(btn.dataset.tab)));
+
+        document.getElementById('projAsama').addEventListener('change', (e) => {
+          document.getElementById('projOlasilik').value = STAGES[e.target.value] ?? 0;
+        });
+
+        document.getElementById('epcForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const editKey = document.getElementById('epcEditKey').value;
+          const firmaAdi = document.getElementById('epcFirmaAdi').value.trim();
+          const sehir = document.getElementById('epcSehir').value.trim();
+          if (!firmaAdi || !sehir) return alert('Firma Adı ve Şehir zorunludur.');
+
+          const epc = sanitizeEpc({
+            firmaAdi, sehir,
+            yetkiliKisi: document.getElementById('epcYetkiliKisi').value.trim(),
+            telefon: document.getElementById('epcTelefon').value.trim(),
+            email: document.getElementById('epcEmail').value.trim(),
+            notlar: document.getElementById('epcNotlar').value.trim(),
+            owner: document.getElementById('epcOwner').value.trim(),
+            updated_at: nowIso(),
+          });
+
+          if (editKey) {
+            const idx = state.epcler.findIndex(x => x.epc_key === editKey);
+            if (idx >= 0) state.epcler[idx] = epc;
+          } else {
+            if (state.epcler.some(x => x.epc_key === epc.epc_key)) return alert('Bu EPC zaten mevcut.');
+            state.epcler.push(epc);
+          }
+          saveState(); resetEpcForm(); renderAll();
+        });
+
+        document.getElementById('projectForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const editKey = document.getElementById('projectEditKey').value;
+          const epc_key = document.getElementById('projEpcKey').value;
+          const projeAdi = document.getElementById('projAdi').value.trim();
+          const gucKw = Number(document.getElementById('projGucKw').value);
+          const tahminiBaslamaAyi = document.getElementById('projTahminiAyi').value;
+          if (!epc_key) return alert('Bağlı EPC zorunludur.');
+          if (!projeAdi || !Number.isFinite(gucKw) || !tahminiBaslamaAyi) return alert('Proje Adı, Güç (kW) ve Tahmini Başlama Ayı zorunludur.');
+
+          const asama = document.getElementById('projAsama').value || 'İlk Temas';
+          const project = sanitizeProject({
+            epc_key, projeAdi, gucKw, tahminiBaslamaAyi,
+            projeTuru: document.getElementById('projTuru').value.trim(),
+            panelGucuW: Number(document.getElementById('projPanelGucuW').value || 595),
+            asama,
+            sonTemasTarihi: document.getElementById('projSonTemas').value,
+            birSonrakiAksiyon: document.getElementById('projAksiyon').value.trim(),
+            sorumlu: document.getElementById('projSorumlu').value,
+            notlar: document.getElementById('projNotlar').value.trim(),
+            owner: document.getElementById('projOwner').value.trim(),
+            updated_at: nowIso(),
+          });
+
+          if (!project) return alert('Girilen proje verisi geçersiz.');
+
+          if (editKey) {
+            const idx = state.projeler.findIndex(x => x.proje_key === editKey);
+            if (idx >= 0) state.projeler[idx] = project;
+          } else {
+            if (state.projeler.some(x => x.proje_key === project.proje_key)) return alert('Bu proje zaten mevcut.');
+            state.projeler.push(project);
+          }
+          saveState(); resetProjectForm(); renderAll();
+        });
+
+        document.querySelector('#epcTable tbody').addEventListener('click', (e) => {
+          const t = e.target;
+          if (t.dataset.epcEdit) {
+            const rec = state.epcler.find(x => x.epc_key === t.dataset.epcEdit);
+            if (!rec) return;
+            document.getElementById('epcEditKey').value = rec.epc_key;
+            document.getElementById('epcFirmaAdi').value = rec.firmaAdi;
+            document.getElementById('epcSehir').value = rec.sehir;
+            document.getElementById('epcYetkiliKisi').value = rec.yetkiliKisi || '';
+            document.getElementById('epcTelefon').value = rec.telefon || '';
+            document.getElementById('epcEmail').value = rec.email || '';
+            document.getElementById('epcNotlar').value = rec.notlar || '';
+            document.getElementById('epcOwner').value = rec.owner || '';
+            document.getElementById('epcUpdatedAt').value = rec.updated_at || '';
+            document.getElementById('epcFormTitle').textContent = 'EPC Düzenle';
+            setTab('epc');
+          }
+          if (t.dataset.epcDel) {
+            if (!confirm('EPC silinsin mi? Bağlı projeler de silinecek.')) return;
+            state.epcler = state.epcler.filter(x => x.epc_key !== t.dataset.epcDel);
+            state.projeler = state.projeler.filter(x => x.epc_key !== t.dataset.epcDel);
+            saveState(); renderAll();
+          }
+        });
+
+        document.querySelector('#projectTable tbody').addEventListener('click', (e) => {
+          const t = e.target;
+          if (t.dataset.projEdit) {
+            const p = state.projeler.find(x => x.proje_key === t.dataset.projEdit);
+            if (!p) return;
+            document.getElementById('projectEditKey').value = p.proje_key;
+            document.getElementById('projEpcKey').value = p.epc_key;
+            document.getElementById('projAdi').value = p.projeAdi;
+            document.getElementById('projTuru').value = p.projeTuru || '';
+            document.getElementById('projGucKw').value = p.gucKw;
+            document.getElementById('projPanelGucuW').value = p.panelGucuW || 595;
+            document.getElementById('projAsama').value = p.asama;
+            document.getElementById('projOlasilik').value = p.olasilik;
+            document.getElementById('projTahminiAyi').value = p.tahminiBaslamaAyi;
+            document.getElementById('projSonTemas').value = p.sonTemasTarihi || '';
+            document.getElementById('projAksiyon').value = p.birSonrakiAksiyon || '';
+            document.getElementById('projSorumlu').value = p.sorumlu || '';
+            document.getElementById('projNotlar').value = p.notlar || '';
+            document.getElementById('projOwner').value = p.owner || '';
+            document.getElementById('projectFormTitle').textContent = 'Proje Düzenle';
+            setTab('projeler');
+          }
+          if (t.dataset.projDel) {
+            if (!confirm('Proje silinsin mi?')) return;
+            state.projeler = state.projeler.filter(x => x.proje_key !== t.dataset.projDel);
+            saveState(); renderAll();
+          }
+        });
+
+        document.getElementById('epcFormReset').addEventListener('click', resetEpcForm);
+        document.getElementById('projectFormReset').addEventListener('click', resetProjectForm);
+
+        document.getElementById('exportEpcBtn').addEventListener('click', () => {
+          downloadCsv('epc.csv', toCsv(state.epcler, EPC_COLUMNS));
+        });
+
+        document.getElementById('exportProjBtn').addEventListener('click', () => {
+          const rows = state.projeler.map(p => ({ ...p, olasilik: STAGES[p.asama] ?? p.olasilik }));
+          downloadCsv('projeler.csv', toCsv(rows, PROJ_COLUMNS));
+        });
+
+        document.getElementById('startImportBtn').addEventListener('click', async () => {
+          const epcFile = document.getElementById('importEpcFile').files[0];
+          const projFile = document.getElementById('importProjFile').files[0];
+          if (!epcFile || !projFile) return alert('Lütfen hem epc.csv hem projeler.csv seçin.');
+
+          const [epcText, projText] = await Promise.all([epcFile.text(), projFile.text()]);
+          const epcRows = parseCsv(epcText).map(sanitizeEpc).filter(Boolean);
+          const projRows = parseCsv(projText).map(sanitizeProject).filter(Boolean);
+
+          const pending = buildImportConflicts(epcRows, projRows);
+          importContext.pending = pending;
+          importContext.decisions = pending.conflicts;
+
+          if (!pending.conflicts.length) {
+            pending.addEpc.forEach(r => state.epcler.push(r));
+            pending.addProj.forEach(r => state.projeler.push(r));
+            state.lastImportSummary = { added: pending.addEpc.length + pending.addProj.length, updated: 0, conflicts: 0 };
+            saveState(); renderAll();
+            return alert('Çakışma yok. Merge tamamlandı.');
+          }
+          createConflictUI();
+          openConflictModal();
+        });
+
+        document.getElementById('applySuggestedBtn').addEventListener('click', () => {
+          if (!importContext.decisions.length) return;
+          importContext.decisions.forEach(c => {
+            c.choice = chooseSuggested(c.existing, c.incoming);
+            c.fieldChoices = {};
+          });
+          document.getElementById('confirmSuggestedBtn').disabled = false;
+          alert('Öneriler hazırlandı. Uygulamak için toplu onay verin.');
+        });
+
+        document.getElementById('confirmSuggestedBtn').addEventListener('click', () => {
+          if (!confirm('Toplu öneriyi uygulamak istediğinize emin misiniz?')) return;
+          runMergeApplication();
+        });
+
+        document.getElementById('cancelImportBtn').addEventListener('click', closeConflictModal);
+        document.getElementById('applyMergeBtn').addEventListener('click', runMergeApplication);
+
+        resetEpcForm();
+        resetProjectForm();
+        renderAll();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
